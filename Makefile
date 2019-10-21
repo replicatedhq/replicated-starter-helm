@@ -2,6 +2,7 @@ channel := Unstable
 app_slug := "${REPLICATED_APP}"
 version := "0.1.0-dev-${USER}"
 release_notes := "CLI release by ${USER} on $(shell date)"
+SHELL := /bin/bash -o pipefail
 
 .PHONY: deps-vendor-cli
 deps-vendor-cli:
