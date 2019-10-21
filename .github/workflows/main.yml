@@ -1,4 +1,4 @@
-name: Create release on Unstable channel
+name: CI
 
 on:
   push:
@@ -12,6 +12,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Create a release
+    - name: Create a release on the Unstable Channel
       run: make release
+      env:
+        REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
+        REPLICATED_APP: ${{ secrets.REPLICATED_APP }}
+
 

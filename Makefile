@@ -21,11 +21,11 @@ check-app:
 	@if [ -z "$(app_slug)" ]; then echo "Missing REPLICATED_APP"; exit 1; fi
 
 .PHONY: list-releases
-list-releases: deps-vendor-cli check-api-token check-app
+list-releases: check-api-token check-app deps-vendor-cli
 	replicated release ls --app $(app_slug)
 
 .PHONY: release
-release: deps-vendor-cli check-api-token check-app
+release: check-api-token check-app deps-vendor-cli
 	replicated release create \
 		--app $(app_slug) \
 		--yaml-dir manifests \
