@@ -1,0 +1,15 @@
+---
+apiVersion: kots.io/v1beta1
+kind: Application
+metadata:
+  name: sentry-enterprise
+spec:
+  title: Sentry Enterprise
+  icon: https://www.getlivewire.com/wp-content/uploads/2018/10/Your-Logo-here.png
+  releaseNotes: |
+    This is a great new version of my app!
+  ports:
+    - serviceName: "example-nginx"
+      servicePort: 80
+      localPort: 80
+      applicationUrl: "http://example-nginx"

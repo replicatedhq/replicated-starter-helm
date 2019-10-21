@@ -1,0 +1,28 @@
+apiVersion: troubleshoot.replicated.com/v1beta1
+kind: Collector
+metadata:
+  name: collector-sample
+spec:
+  collectors:
+    - clusterInfo: {}
+    - clusterResources: {}
+    - logs:
+        selector:
+          - component=nginx
+        namespace: default
+        limits:
+          maxAge: 30d
+          maxLines: 10000
+    - run:
+        collectorName: ping-google
+        namespace: default
+        image: flungo/netutils
+        command: ["ping"]
+        args: ["www.google.com"]
+        timeout: 5s
+    - http:
+        collectorName: test-get
+        get:
+          url: https://api.replicated.com/market/v1/echo/ip
+          insecureSkipVerify: false
+          headers: {}
