@@ -22,7 +22,7 @@ check-app:
 
 .PHONY: list-releases
 list-releases: check-api-token check-app deps-vendor-cli
-	replicated release ls --app $(app_slug)
+	deps/replicated release ls --app $(app_slug)
 
 .PHONY: release
 release: check-api-token check-app deps-vendor-cli
