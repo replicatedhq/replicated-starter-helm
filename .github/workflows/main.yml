@@ -1,0 +1,17 @@
+name: CI
+
+on: 
+  push:
+   branches:
+     - master
+
+jobs:
+  create-unstable-release:
+
+    runs-on: buildpack-deps
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Create a release
+      run: make release
+
