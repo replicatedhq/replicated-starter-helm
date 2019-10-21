@@ -1,6 +1,6 @@
 name: CI
 
-on: 
+on:
   push:
    branches:
      - master
@@ -8,8 +8,8 @@ on:
 jobs:
   create-unstable-release:
 
-    runs-on: buildpack-deps
-    
+    runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v1
     - name: Create a release
