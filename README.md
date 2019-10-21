@@ -58,6 +58,10 @@ By default the `Unstable` channel will be used. You can override this with `chan
 make release channel=Beta
 ```
 
+### Integrating with CI
+
+This repo contains a [GitHub Actions](https://help.github.com/en/github/automating-your-workflow-with-github-actions/about-github-actions) workflow for ci at [./.github/workflows/main.yaml](./.github/workflows/main.yaml). You'll need to [configure secrets](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) for `REPLICATED_APP` and `REPLICATED_API_TOKEN`.
+
 ### Tools reference
 
 - [replicated vendor cli](https://github.com/replicatedhq/replicated)
