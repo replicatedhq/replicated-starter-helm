@@ -1,7 +1,7 @@
 Replicated Kubernetes Starter
 ==================
 
-Example project showcasing how power users can leverage the Replicated CLI Tools Replicated YAML using a git repository.
+Example project showcasing how power users can leverage the Replicated CLI Tools to manage kots YAMLs using a git repository.
 
 ### Get started
 
