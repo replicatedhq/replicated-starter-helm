@@ -5,7 +5,7 @@ metadata:
   name: myapp-enterprise
 spec:
   title: My Great App
-  icon: https://www.getlivewire.com/wp-content/uploads/2018/10/Your-Logo-here.png
+  icon: https://image.flaticon.com/icons/svg/199/199594.svg
   releaseNotes: |
     This is a great new version of my app!
   ports:

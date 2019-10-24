@@ -32,3 +32,4 @@ release: check-api-token check-app deps-vendor-cli
 		--promote $(channel) \
 		--version $(version) \
 		--release-notes $(release_notes)
+
