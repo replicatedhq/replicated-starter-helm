@@ -34,3 +34,7 @@ release: check-api-token check-app deps-vendor-cli
 		--release-notes $(release_notes) \
 		--ensure-channel
 
+gitsha-release:
+	@$(MAKE) release \
+		channel=refs/heads/$(shell git rev-parse --abbrev-ref HEAD) \
+		version=$(shell git rev-parse HEAD | head -c7)$(shell git diff --no-ext-diff --quiet --exit-code || echo -n "-dirty")
