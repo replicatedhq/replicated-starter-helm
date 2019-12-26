@@ -34,6 +34,10 @@ release: check-api-token check-app deps-vendor-cli
 		--release-notes $(release_notes) \
 		--ensure-channel
 
+
+# Use the current branch name for the channel name, 
+# and use the git SHA for the release version, 
+# adding a "-dirty" suffix to the version label if there are uncomitted changes
 gitsha-release:
 	@$(MAKE) release \
 		channel=refs/heads/$(shell git rev-parse --abbrev-ref HEAD) \
