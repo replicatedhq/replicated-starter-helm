@@ -9,8 +9,12 @@ deps-vendor-cli:
 	@if [[ -x deps/replicated ]]; then exit 0; else \
 	echo '-> Downloading Replicated CLI... '; \
 	mkdir -p deps/; \
-	if [[ "`uname`" == "Linux" ]]; then curl -fsSL https://github.com/replicatedhq/replicated/releases/download/v0.18.0/replicated_0.18.0_linux_amd64.tar.gz | tar xvz -C deps; exit 0; fi; \
-	if [[ "`uname`" == "Darwin" ]]; then curl -fsSL https://github.com/replicatedhq/replicated/releases/download/v0.18.0/replicated_0.18.0_darwin_amd64.tar.gz | tar xvz -C deps; exit 0; fi; fi;
+	if [[ "`uname`" == "Linux" ]]; then curl -fsSL https://github.com/replicatedhq/replicated/releases/download/v0.19.0/replicated_0.19.0_linux_amd64.tar.gz | tar xvz -C deps; exit 0; fi; \
+	if [[ "`uname`" == "Darwin" ]]; then curl -fsSL https://github.com/replicatedhq/replicated/releases/download/v0.19.0/replicated_0.19.0_darwin_amd64.tar.gz | tar xvz -C deps; exit 0; fi; fi;
+
+.PHONY: lint
+lint: check-api-token check-app deps-vendor-cli
+	deps/replicated release lint --app $(app_slug) --yaml-dir manifests
 
 .PHONY: check-api-token
 check-api-token:
@@ -25,7 +29,7 @@ list-releases: check-api-token check-app deps-vendor-cli
 	deps/replicated release ls --app $(app_slug)
 
 .PHONY: release
-release: check-api-token check-app deps-vendor-cli
+release: check-api-token check-app deps-vendor-cli lint
 	deps/replicated release create \
 		--app $(app_slug) \
 		--yaml-dir manifests \
