@@ -2,14 +2,12 @@
 apiVersion: kots.io/v1beta1
 kind: Application
 metadata:
-  name: myapp-enterprise
+  name: nginx-example
 spec:
-  title: My Great App
-  icon: https://image.flaticon.com/icons/svg/199/199594.svg
-  releaseNotes: |
-    This is a great new version of my app!
+  title: Nginx Example
+  icon: https://cdn.auth0.com/blog/nginx-plus/nginx-logo.png
   ports:
     - serviceName: "example-nginx"
       servicePort: 80
-      localPort: 80
+      localPort: 8888
       applicationUrl: "http://example-nginx"
