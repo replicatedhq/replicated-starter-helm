@@ -4,15 +4,15 @@ app_slug := "${REPLICATED_APP}"
 release_notes := "CLI release by ${shell git log -1 --pretty=format:'%ae'} on $(shell date)"
 
 # If tag is set and we're using github_actions, that takes precedence and we release on the beta channel. 
-# Otherwise, get the branch, ensure the first char is uppercase, and use to build version. 
+# Otherwise, get the branch use to build version and release on that channel
 ifeq ($(origin GITHUB_TAG_NAME),undefined)
 ifeq ($(origin ${GITHUB_BRANCH_NAME}),undefined)
-channel := $(shell ch=$$(git rev-parse --abbrev-ref HEAD);echo $$(tr '[:lower:]' '[:upper:]' <<< $${ch:0:1})$${ch:1})
+channel := $(shell git rev-parse --abbrev-ref HEAD)
 else 
-channel := $(shell ch=$$(GITHUB_BRANCH_NAME);echo $$(tr '[:lower:]' '[:upper:]' <<< $${ch:0:1})$${ch:1})
+channel := ${GITHUB_BRANCH_NAME}
 endif 
 # Translate "Master" to "Unstable", if on that branch
-ifeq ($(channel), Master)
+ifeq ($(channel), master)
 channel := Unstable
 endif 
 version := $(channel)-$(shell git rev-parse HEAD | head -c7)$(shell git diff --no-ext-diff --quiet --exit-code || echo "-dirty")
