@@ -6,14 +6,29 @@ SHELL := /bin/bash -o pipefail
 
 .PHONY: deps-vendor-cli
 deps-vendor-cli: dist = $(shell echo `uname` | tr '[:upper:]' '[:lower:]')
+deps-vendor-cli: cli_version = ""
+deps-vendor-cli: cli_version = $(shell [[ -x deps/replicated ]] && deps/replicated version | grep version | head -n1 | cut -d: -f2 | tr -d , )
 
 deps-vendor-cli:
-	curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
-	| grep "browser_download_url.*$(dist)_amd64.tar.gz" \
-	| cut -d : -f 2,3 \
-	| tr -d \" \
-	| wget -O- -qi - \
-	| tar xv -C deps;
+	@if [[ -n "$(cli_version)" ]]; then \
+	  echo "CLI version $(cli_version) already downloaded, to download a newer version, run 'make upgrade-cli'"; \
+	  exit 0; \
+	else \
+	  echo '-> Downloading Replicated CLI to ./deps '; \
+	  mkdir -p deps/; \
+	  curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
+	  | grep "browser_download_url.*$(dist)_amd64.tar.gz" \
+	  | cut -d : -f 2,3 \
+	  | tr -d \" \
+	  | wget -O- -qi - \
+	  | tar xv -C deps; \
+	fi
+
+.PHONY: upgrade-cli
+upgrade-cli:
+	rm -rf deps
+	@$(MAKE) deps-vendor-cli
+
 
 .PHONY: lint
 lint: check-api-token check-app deps-vendor-cli
