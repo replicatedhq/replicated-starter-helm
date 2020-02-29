@@ -62,7 +62,6 @@ list-releases: check-api-token check-app deps-vendor-cli
 
 .PHONY: release
 release: check-api-token check-app deps-vendor-cli
-	@if [[ ${channel) == -x ../deps/replicated ]]; then exit 0; else \
 	deps/replicated release create \
 		--app $(app_slug) \
 		--yaml-dir manifests \
