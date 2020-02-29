@@ -63,7 +63,7 @@ list-releases: check-api-token check-app deps-vendor-cli
 	deps/replicated release ls --app $(app_slug)
 
 .PHONY: release
-release: check-api-token check-app deps-vendor-cli
+release: check-api-token check-app deps-vendor-cli lint
 	deps/replicated release create \
 		--app $(app_slug) \
 		--yaml-dir manifests \
