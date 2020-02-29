@@ -22,12 +22,27 @@ version := ${GITHUB_TAG_NAME}
 endif
 
 .PHONY: deps-vendor-cli
-deps-vendor-cli:
-	@if [[ -x deps/replicated ]]; then exit 0; else \
-	echo '-> Downloading Replicated CLI... '; \
-	mkdir -p deps/; \
-	if [[ "`uname`" == "Linux" ]]; then curl -fsSL https://github.com/replicatedhq/replicated/releases/download/v0.15.0/replicated_0.19.0_linux_amd64.tar.gz | tar xvz -C deps; exit 0; fi; \
-	if [[ "`uname`" == "Darwin" ]]; then curl -fsSL https://github.com/replicatedhq/replicated/releases/download/v0.15.0/replicated_0.19.0_darwin_amd64.tar.gz | tar xvz -C deps; exit 0; fi; fi;
+	$(eval dist := $(shell echo `uname` | tr '[:upper:]' '[:lower:]'))
+	$(eval cli_version := $(shell [[ -x deps/replicated ]] && deps/replicated version | grep version | head -n1 | cut -d: -f2 | tr -d , ))
+
+	@if [[ -n "$(cli_version)" ]]; then \
+	  echo "CLI version $(cli_version) already downloaded, to download a newer version, run 'make upgrade-cli'"; \
+	  exit 0; \
+	else \
+	  echo '-> Downloading Replicated CLI to ./deps '; \
+	  mkdir -p deps/; \
+	  curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
+	  | grep "browser_download_url.*$(dist)_amd64.tar.gz" \
+	  | cut -d : -f 2,3 \
+	  | tr -d \" \
+	  | wget -O- -qi - \
+	  | tar xvz -C deps; \
+	fi
+
+.PHONY: upgrade-cli
+upgrade-cli:
+	rm -rf deps
+	@$(MAKE) deps-vendor-cli
 
 .PHONY: lint
 lint: check-api-token check-app deps-vendor-cli
@@ -53,4 +68,9 @@ release: check-api-token check-app deps-vendor-cli
 		--yaml-dir manifests \
 		--promote $(channel) \
 		--version $(version) \
-		--release-notes $(release_notes)
+		--release-notes $(release_notes) \
+		--ensure-channel
+
+
+# Preserving for backwards compatibility (behavior was merged on release). 
+gitsha-release: release
