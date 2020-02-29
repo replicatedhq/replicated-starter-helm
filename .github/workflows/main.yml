@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     paths:
-    - 'manifests/**'
-    - '.github/workflows/main.yml'
+    - '*'
+    - '!doc'
+    - '!*.md'
+    - '!.gitignore'
     branches:
     - "*"
     - "!**-norelease"
