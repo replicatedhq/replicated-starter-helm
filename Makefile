@@ -6,7 +6,7 @@ app_slug := "${REPLICATED_APP}"
 ifeq ($(origin GITHUB_ACTIONS), undefined)
 release_notes := "CLI release of $(shell git symbolic-ref HEAD) triggered by ${shell git log -1 --pretty=format:'%ae'}: $(shell basename $$(git remote get-url origin) .git) [SHA: $(shell git rev-parse HEAD)]"
 else 
-release_notes := "GitHub Action release of ${GITHUB_REF} triggered by ${GITHUB_ACTOR}: [${GITHUB_SHA::7}](https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA})"
+release_notes := "GitHub Action release of ${GITHUB_REF} triggered by ${GITHUB_ACTOR}: [$(shell echo $${GITHUB_SHA::7})](https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA})"
 endif 
 
 # If tag is set and we're using github_actions, that takes precedence and we release on the beta channel. 
