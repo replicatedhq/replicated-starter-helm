@@ -14,14 +14,14 @@ deps-vendor-cli:
 	  echo "CLI version $(cli_version) already downloaded, to download a newer version, run 'make upgrade-cli'"; \
 	  exit 0; \
 	else \
-	  echo "-> Downloading Replicated CLI for $(dist) to ./deps "; \
+	  echo '-> Downloading Replicated CLI to ./deps '; \
 	  mkdir -p deps/; \
 	  curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
 	  | grep "browser_download_url.*$(dist)_amd64.tar.gz" \
 	  | cut -d : -f 2,3 \
 	  | tr -d \" \
 	  | wget -O- -qi - \
-	  | tar xv -C deps; \
+	  | tar xvz -C deps; \
 	fi
 
 .PHONY: upgrade-cli
