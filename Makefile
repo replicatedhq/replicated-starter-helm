@@ -3,7 +3,7 @@ SHELL := /bin/bash -o pipefail
 app_slug := "${REPLICATED_APP}"
 
 # Generate release notes that provide origin details. 
-ifeq ($(origin $(GITHUB_REF)), undefined)
+ifeq ($(origin ${GITHUB_REF}), undefined)
 release_notes := "CLI release of $(shell git symbolic-ref HEAD) triggered by ${shell git log -1 --pretty=format:'%ae'}: $(shell basename $$(git remote get-url origin) .git) [SHA: $(shell git rev-parse HEAD)]"
 else 
 release_notes := "GitHub Action release of ${GITHUB_REF} triggered by ${GITHUB_ACTOR}: [${GITHUB_SHA::7}](https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA})"
