@@ -72,6 +72,6 @@ release: check-api-token check-app deps-vendor-cli lint
 		--release-notes $(release_notes) \
 		--ensure-channel
 
+
 # Preserving for backwards compatibility (behavior was merged on release). 
-.PHONY gitsha-release: 
 gitsha-release: release
