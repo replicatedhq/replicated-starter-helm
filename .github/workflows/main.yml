@@ -2,11 +2,14 @@ name: CI
 
 on:
   push:
+    paths:
+    - 'manifests/**'
+    - '.github/workflows/main.yml'
     branches:
     - "*"
     - "!**-norelease"
     tags:
-    - 'v[0-9]+.[0-9]+.[0-9]+'
+    - '^v(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
 jobs:
   create-release:
     runs-on: ubuntu-latest
