@@ -21,13 +21,6 @@ channel := "Beta"
 version := ${GITHUB_TAG_NAME}
 endif
 
-# Get current version for use with semver
-release_type ?= patch # (supported values: patch, minor, major)
-current_version := $(shell git ls-remote --tags -q | awk '{print $$2}' | grep "v[0-9][0-9]*" | sort -nr | head -n1|sed 's/refs\/tags\///g')
-ifndef current_version 
-  current_version := 0.0.0
-endif
-
 .PHONY: deps-vendor-cli
 deps-vendor-cli: dist = $(shell echo `uname` | tr '[:upper:]' '[:lower:]')
 deps-vendor-cli: cli_version = ""
@@ -82,22 +75,3 @@ release: check-api-token check-app deps-vendor-cli lint
 # Preserving for backwards compatibility (behavior was merged on release). 
 .PHONY gitsha-release: 
 gitsha-release: release
-
-# Return the current version. The latest tag based on semver sort order. 
-.PHONY current-version: 
-current-version:
-	@echo $(current_version)
-
-# make next-version returns 1.0.1 if current version is 1.0 or 1.0.0
-# make next-version release_type=minor returns 1.1.0 if current version is 1.0 or 1.0.0 or 1
-.PHONY next-version:
-next-version:
-	@echo v$(shell docker run --rm alpine/semver semver -c -i $(release_type) $(current_version))
-
-# tag and push the next semver version (resulting in CI release on "Beta" channel). Can specify release_type. Default is patch (1.0.0 -> 1.0.1). 
-.PHONY tag-next-semver:
-tag-next-semver: next_tag=v$(shell docker run --rm alpine/semver semver -c -i $(release_type) $(current_version))
-tag-next-semver:
-	git checkout master;
-	git tag $(next_tag)
-	git push origin $(next_tag)
