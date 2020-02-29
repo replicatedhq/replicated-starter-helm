@@ -58,6 +58,11 @@ lint: check-api-token check-app deps-vendor-cli
 
 .PHONY: check-api-token
 check-api-token:
+	@echo ${GITHUB_ACTIONS}
+	@echo ${GITHUB_REF}
+	@echo ${GITHUB_SHA}
+	@echo ${GITHUB_ACTOR}
+	@echo ${GITHUB_REPOSITORY}
 	@if [ -z "${REPLICATED_API_TOKEN}" ]; then echo "Missing REPLICATED_API_TOKEN"; exit 1; fi
 
 .PHONY: check-app
