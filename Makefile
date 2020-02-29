@@ -22,9 +22,11 @@ version := ${GITHUB_TAG_NAME}
 endif
 
 .PHONY: deps-vendor-cli
-	$(eval dist := $(shell echo `uname` | tr '[:upper:]' '[:lower:]'))
-	$(eval cli_version := $(shell [[ -x deps/replicated ]] && deps/replicated version | grep version | head -n1 | cut -d: -f2 | tr -d , ))
+deps-vendor-cli: dist = $(shell echo `uname` | tr '[:upper:]' '[:lower:]')
+deps-vendor-cli: cli_version = ""
+deps-vendor-cli: cli_version = $(shell [[ -x deps/replicated ]] && deps/replicated version | grep version | head -n1 | cut -d: -f2 | tr -d , )
 
+deps-vendor-cli: 
 	@if [[ -n "$(cli_version)" ]]; then \
 	  echo "CLI version $(cli_version) already downloaded, to download a newer version, run 'make upgrade-cli'"; \
 	  exit 0; \
