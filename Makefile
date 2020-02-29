@@ -4,17 +4,15 @@ app_slug := "${REPLICATED_APP}"
 
 # Generate release notes that provide origin details. 
 ifeq ($(origin GITHUB_ACTIONS), undefined)
-github_tag_name := ${GITHUB_TAG_NAME}
-release_notes := "CLI release of $(shell git symbolic-ref HEAD) triggered by ${shell git log -1 --pretty=format:'%ae'}: $(shell basename $$(git remote get-url origin) .git) [SHA: $(shell git rev-parse HEAD)]"
+release_notes := "CLI release of $(shell git symbolic-ref HEAD) triggered by ${shell git config --global user.name}: $(shell basename $$(git remote get-url origin) .git) [SHA: $(shell git rev-parse HEAD)]"
 else 
-github_tag_name = ""
 release_notes := "GitHub Action release of ${GITHUB_REF} triggered by ${GITHUB_ACTOR}: [$(shell echo $${GITHUB_SHA::7})](https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA})"
 endif 
 
 # If tag is set and we're using github_actions, that takes precedence and we release on the beta channel. 
 # Otherwise, get the branch use to build version and release on that channel
-ifeq ($(github_tag_name) == "")
-ifeq ($(origin GITHUB_BRANCH_NAME),undefined)
+ifeq ($(GITHUB_TAG_NAME),)
+ifeq ($(GITHUB_BRANCH_NAME),)
 channel := $(shell git rev-parse --abbrev-ref HEAD)
 else 
 channel := ${GITHUB_BRANCH_NAME}
