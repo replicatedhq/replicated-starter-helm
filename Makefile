@@ -1,15 +1,32 @@
-channel := Unstable
-app_slug := "${REPLICATED_APP}"
-version := "0.1.0-dev-${USER}"
-release_notes := "CLI release by ${USER} on $(shell date)"
 SHELL := /bin/bash -o pipefail
+
+app_slug := "${REPLICATED_APP}"
+release_notes := "CLI release by ${shell git log -1 --pretty=format:'%ae'} on $(shell date)"
+
+# If tag is set and we're using github_actions, that takes precedence and we release on the beta channel. 
+# Otherwise, get the branch use to build version and release on that channel
+ifeq ($(origin GITHUB_TAG_NAME),undefined)
+ifeq ($(origin ${GITHUB_BRANCH_NAME}),undefined)
+channel := $(shell git rev-parse --abbrev-ref HEAD)
+else 
+channel := ${GITHUB_BRANCH_NAME}
+endif 
+# Translate "Master" to "Unstable", if on that branch
+ifeq ($(channel), master)
+channel := Unstable
+endif 
+version := $(channel)-$(shell git rev-parse HEAD | head -c7)$(shell git diff --no-ext-diff --quiet --exit-code || echo "-dirty")
+else 
+channel := "Beta"
+version := ${GITHUB_TAG_NAME}
+endif
 
 .PHONY: deps-vendor-cli
 deps-vendor-cli: dist = $(shell echo `uname` | tr '[:upper:]' '[:lower:]')
 deps-vendor-cli: cli_version = ""
 deps-vendor-cli: cli_version = $(shell [[ -x deps/replicated ]] && deps/replicated version | grep version | head -n1 | cut -d: -f2 | tr -d , )
 
-deps-vendor-cli:
+deps-vendor-cli: 
 	@if [[ -n "$(cli_version)" ]]; then \
 	  echo "CLI version $(cli_version) already downloaded, to download a newer version, run 'make upgrade-cli'"; \
 	  exit 0; \
@@ -28,7 +45,6 @@ deps-vendor-cli:
 upgrade-cli:
 	rm -rf deps
 	@$(MAKE) deps-vendor-cli
-
 
 .PHONY: lint
 lint: check-api-token check-app deps-vendor-cli
@@ -57,15 +73,5 @@ release: check-api-token check-app deps-vendor-cli lint
 		--ensure-channel
 
 
-# Use the current branch name for the channel name,
-# and use the git SHA for the release version,
-# adding a "-dirty" suffix to the version label if there are uncomitted changes
-gitsha-release:
-	@$(MAKE) release \
-		channel=refs/heads/$(shell git rev-parse --abbrev-ref HEAD) \
-		version=$(shell git rev-parse HEAD | head -c7)$(shell git diff --no-ext-diff --quiet --exit-code || echo -n "-dirty")
-
-
-
-
-
+# Preserving for backwards compatibility (behavior was merged on release). 
+gitsha-release: release
