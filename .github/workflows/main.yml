@@ -3,12 +3,9 @@ name: CI
 on:
   push:
     paths:
-    - '*'
-    - '!doc'
-    - '!*.md'
-    - '!.gitignore'
+    - '**'
     branches:
-    - "*"
+    - "**"
     - "!**-norelease"
     tags:
     - '0|[1-9]\d*\.0|[1-9]\d*\.0|[1-9]\d*'
