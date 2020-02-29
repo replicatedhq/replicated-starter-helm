@@ -26,3 +26,4 @@ jobs:
         REPLICATED_APP: ${{ secrets.REPLICATED_APP }}
         GITHUB_BRANCH_NAME: ${{ steps.get_branch.outputs.branch }}
         GITHUB_TAG_NAME: ${{ steps.get_tag.outputs.tag }}
+
