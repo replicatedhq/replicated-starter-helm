@@ -88,7 +88,7 @@ release: check-api-token check-app deps-vendor-cli lint
 
 # Preserving for backwards compatibility (behavior was merged on release). 
 .PHONY gitsha-release: 
-gitsha-release: release	gitsha-release: release
+gitsha-release: release
 
 # Return the current version. The latest tag based on semver sort order. 
 .PHONY current-version: 
