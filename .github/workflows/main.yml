@@ -10,7 +10,8 @@ on:
     - "**"
     - "!**-norelease"
     tags:
-    - '0|[1-9]\d*\.0|[1-9]\d*\.0|[1-9]\d*'
+    - '0|[1-9]\d*\.0|[1-9]\d*\.0|[1-9]\d*?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))'
+    
 jobs:
   create-release:
     runs-on: ubuntu-latest
