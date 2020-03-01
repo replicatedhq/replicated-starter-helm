@@ -104,7 +104,9 @@ next-version:
 # tag and push the next semver version (resulting in CI release on "Beta" channel). Can specify release_type. Default is patch (1.0.0 -> 1.0.1). 
 .PHONY tag-next-version:
 tag-next-version: next_tag=v$(shell docker run --rm alpine/semver semver -c -i $(release_type) $(current_version))
+tag-next-version: current_branch=$(shell git rev-parse --abbrev-ref HEAD)
 tag-next-version:
 	git checkout master;
 	git tag $(next_tag)
 	git push origin $(next_tag) 
+	git checkout $(current_branch)
