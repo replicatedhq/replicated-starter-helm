@@ -7,7 +7,6 @@ metadata:
     component: nginx
 spec:
   type: ClusterIP
-
   ports:
   - port: 80
   selector:

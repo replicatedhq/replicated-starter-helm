@@ -1,11 +1,12 @@
----
 apiVersion: kots.io/v1beta1
 kind: Application
 metadata:
-  name: nginx-example
+  name: app-slug
 spec:
-  title: Nginx Example
-  icon: https://cdn.auth0.com/blog/nginx-plus/nginx-logo.png
+  title: App Name
+  icon: https://github.com/cncf/artwork/blob/master/projects/kubernetes/icon/color/kubernetes-icon-color.png
+  statusInformers:
+    - deployment/example-nginx
   ports:
     - serviceName: "example-nginx"
       servicePort: 80
