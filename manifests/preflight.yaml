@@ -54,13 +54,13 @@ spec:
           - warn:
               message: Unable to determine the distribution of Kubernetes
     - nodeResources:
-      checkName: CPU Core check
-      outcomes:
-        - fail:
-            when: 'min(cpuCapacity) < 2'
-            message: Every node must contain at least 2 CPU cores
-        - warn:
-            when: 'min(cpuCapacity) < 4'
-            message: We recommend all nodes to have at least 4 CPU cores
-        - pass:
-            message: All nodes have enough cores
+        checkName: Total CPU Cores in the cluster is 2 or greater
+        outcomes:
+          - fail:
+              when: "sum(cpuCapacity) < 2"
+              message: The cluster must contain at least 2 cores
+          - fail:
+              when: "sum(cpuCapacity) < 4"
+              message: The cluster must contain at least 4 cores
+          - pass:
+              message: There are at least 2 cores in the cluster

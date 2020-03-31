@@ -7,8 +7,6 @@ spec:
   icon: https://github.com/cncf/artwork/blob/master/projects/kubernetes/icon/color/kubernetes-icon-color.png
   statusInformers:
     - deployment/example-nginx
-  releaseNotes: |
-    release notes
   ports:
     - serviceName: "example-nginx"
       servicePort: 80
