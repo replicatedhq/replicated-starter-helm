@@ -1,11 +1,11 @@
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: "nginx-example"
+  name: "example-app"
   labels:
-    app.kubernetes.io/name: "nginx-example"
+    app.kubernetes.io/name: "example-app"
 spec:
   descriptor:
     links:
-      - description: 'Open Nginx Example'
+      - description: 'Launch'
         url: "http://example-nginx"

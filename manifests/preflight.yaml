@@ -8,7 +8,7 @@ spec:
         outcomes:
           - fail:
               when: "< 1.13.0"
-              message: The application requires at Kubernetes 1.13.0 or later, and 1.15.0 is recommended.
+              message: The application requires at Kubernetes 1.13.0 or later, and recommends 1.15.0.
               uri: https://www.kubernetes.io
           - warn:
               when: "< 1.15.0"
@@ -16,3 +16,51 @@ spec:
               uri: https://kubernetes.io
           - pass:
               message: Your cluster meets the recommended and required versions of Kubernetes.
+    - containerRuntime:
+        outcomes:
+          - pass:
+              when: "== docker"
+              message: Docker container runtime was found.
+          - fail:
+              message: Did not find Docker container runtime.
+    - distribution:
+        checkName: Check Kubernetes environment.
+        outcomes:
+          - fail:
+              when: "== docker-desktop"
+              message: The application does not support Docker Desktop Clusters
+          - fail:
+              when: "== microk8s"
+              message: The application does not support Microk8s Clusters
+          - fail:
+              when: "== minikube"
+              message: The application does not support Minikube Clusters
+          - pass:
+              when: "== eks"
+              message: EKS is a supported distribution
+          - pass:
+              when: "== gke"
+              message: GKE is a supported distribution
+          - pass:
+              when: "== aks"
+              message: AKS is a supported distribution
+          # Will be supported in the future
+          - pass:
+              when: "== kurl"
+              message: KURL is a supported distribution
+          - pass:
+              when: "== digitalocean"
+              message: DigitalOcean is a supported distribution
+          - warn:
+              message: Unable to determine the distribution of Kubernetes
+    - nodeResources:
+      checkName: CPU Core check
+      outcomes:
+        - fail:
+            when: 'min(cpuCapacity) < 2'
+            message: Every node must contain at least 2 CPU cores
+        - warn:
+            when: 'min(cpuCapacity) < 4'
+            message: We recommend all nodes to have at least 4 CPU cores
+        - pass:
+            message: All nodes have enough cores
