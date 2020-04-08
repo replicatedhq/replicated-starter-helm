@@ -87,7 +87,7 @@ release: check-api-token check-app deps-vendor-cli lint
 release-kurl-installer: check-api-token check-app deps-vendor-cli
 	deps/replicated installer create \
 		--app $(app_slug) \
-		--yaml-file kurl-installer.yaml \
+		--yaml-file kurl.yaml \
 		--promote $(channel) \
 		--ensure-channel
 
