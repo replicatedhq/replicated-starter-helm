@@ -29,7 +29,7 @@ endif
 
 # Get current version for use with semver
 release_type ?= patch # (supported values: patch, minor, major)
-current_version := $(shell git ls-remote --tags -q | awk '{print $2}' | grep "v[0-9][0-9]*" | sort -nr | head -n1|sed 's/refs\/tags\///g')
+current_version := $(shell git ls-remote --tags -q | awk '{print $$2}' | grep "v[0-9][0-9]*" | sort -nr | head -n1|sed 's/refs\/tags\///g')
 ifndef current_version
   current_version := 0.0.0
 endif
