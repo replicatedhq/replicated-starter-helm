@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    paths:
+    - '.github/workflows/kurl-installer.yml'
+    - 'kurl-installer.yaml'
+    branches:
+    - "**"
+    - "!**-norelease"
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 0
+    - name: Get tag name, if specified
+      run: if grep -q "/tags/" <<< "${GITHUB_REF}"; then echo ::set-output name=tag::${GITHUB_REF:10}; fi
+      id: get_tag
+    - name: Get branch name
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: get_branch
+    - name: Create a release on Channel associated with the branch
+      run: make release-kurl-installer
+      env:
+        REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
+        REPLICATED_APP: ${{ secrets.REPLICATED_APP }}
+        GITHUB_BRANCH_NAME: ${{ steps.get_branch.outputs.branch }}
+        GITHUB_TAG_NAME: ${{ steps.get_tag.outputs.tag }}
+
