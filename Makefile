@@ -83,14 +83,14 @@ release: check-api-token check-app deps-vendor-cli lint
 		--version $(version) \
 		--release-notes $(release_notes) \
 		--ensure-channel
-.PHONY: release
+
+.PHONY: release-kurl-installer
 release-kurl-installer: check-api-token check-app deps-vendor-cli
 	deps/replicated installer create \
 		--app $(app_slug) \
-		--yaml-file kurl.yaml \
+		--yaml-file kurl-installer.yaml \
 		--promote $(channel) \
 		--ensure-channel
-
 
 # Preserving for backwards compatibility (behavior was merged on release).
 .PHONY gitsha-release:

@@ -3,10 +3,8 @@ name: CI
 on:
   push:
     paths:
-    - '**'
-    - '!**.md'
-    - '!kurl-installer.yaml'
-    - '!doc/**'
+    - '.github/workflows/kurl-installer.yml'
+    - 'kurl-installer.yaml'
     branches:
     - "**"
     - "!**-norelease"
@@ -27,7 +25,7 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: get_branch
     - name: Create a release on Channel associated with the branch
-      run: make release
+      run: make release-kurl-installer
       env:
         REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         REPLICATED_APP: ${{ secrets.REPLICATED_APP }}
