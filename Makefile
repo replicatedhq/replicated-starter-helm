@@ -25,11 +25,11 @@ version := $(channel)-$(shell git rev-parse HEAD | head -c7)$(shell git diff --n
 else
 channel := "Beta"
 version := ${GITHUB_TAG_NAME}
-endif
+endif.
 
 # Get current version for use with semver
 release_type ?= patch # (supported values: patch, minor, major)
-current_version := $(shell git ls-remote --tags -q | awk '{print $$2}' | grep "v[0-9][0-9]*" | sort -nr | head -n1|sed 's/refs\/tags\///g')
+current_version := $(shell git ls-remote --tags -q | awk '{print $2}' | grep "v[0-9][0-9]*" | sort -nr | head -n1|sed 's/refs\/tags\///g')
 ifndef current_version
   current_version := 0.0.0
 endif
@@ -84,11 +84,11 @@ release: check-api-token check-app deps-vendor-cli lint
 		--release-notes $(release_notes) \
 		--ensure-channel
 
-.PHONY: release-installer
-release-installer: check-api-token check-app deps-vendor-cli
+.PHONY: release-kurl-installer
+release-kurl-installer: check-api-token check-app deps-vendor-cli
 	deps/replicated installer create \
 		--app $(app_slug) \
-		--yaml-file installer.yaml \
+		--yaml-file kurl-installer.yaml \
 		--promote $(channel) \
 		--ensure-channel
 
