@@ -25,7 +25,7 @@ version := $(channel)-$(shell git rev-parse HEAD | head -c7)$(shell git diff --n
 else
 channel := "Beta"
 version := ${GITHUB_TAG_NAME}
-endif.
+endif
 
 # Get current version for use with semver
 release_type ?= patch # (supported values: patch, minor, major)
@@ -91,7 +91,6 @@ release-kurl-installer: check-api-token check-app deps-vendor-cli
 		--yaml-file kurl-installer.yaml \
 		--promote $(channel) \
 		--ensure-channel
-
 
 # Preserving for backwards compatibility (behavior was merged on release).
 .PHONY gitsha-release:
