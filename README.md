@@ -58,9 +58,28 @@ By default the `Unstable` channel will be used. You can override this with `chan
 make release channel=Beta
 ```
 
+
 ### Integrating with CI
 
-This repo contains a [GitHub Actions](https://help.github.com/en/github/automating-your-workflow-with-github-actions/about-github-actions) workflow for ci at [./.github/workflows/main.yml](./.github/workflows/main.yml). You'll need to [configure secrets](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) for `REPLICATED_APP` and `REPLICATED_API_TOKEN`.
+This repo contains a [GitHub Actions](https://help.github.com/en/github/automating-your-workflow-with-github-actions/about-github-actions) workflow for ci at [./.github/workflows/main.yml](./.github/workflows/main.yml). You'll need to [configure secrets](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) for `REPLICATED_APP` and `REPLICATED_API_TOKEN`. On every push this will:
+
+- Ensure a channel exists for the branch that was pushed to
+- Create a release based on the contents of
+
+## Advanced Usage
+
+### Integrating kurl installer yaml
+
+There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https://kurl.sh) installer versions for an embedded Kubernetes cluster. This isn't released by default in the GitHub action, but it can be released, either locally or in CI, by running the following.
+
+```
+make release-kurl-installer
+```
+
+
+### Advanced Tagging Workflow
+
+There is also a Makefile.advanced with a powerful workflow for tagging and releasing new versions.
 
 ### Tools reference
 
