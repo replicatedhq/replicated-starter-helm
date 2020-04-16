@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    kots.io/when: 'repl{{ ConfigOptionEquals "use_ingress" "1" }}'
+    kots.io/when: '{{repl ConfigOptionEquals "use_ingress" "1" }}'
 spec:
   rules:
   - http:
