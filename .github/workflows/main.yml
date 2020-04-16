@@ -6,6 +6,7 @@ on:
     - '**'
     - '!kurl-installer.yaml'
     - '!**.md'
+    - '!doc/**'
     - '!**.png'
 
 jobs:
