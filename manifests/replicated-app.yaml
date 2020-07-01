@@ -4,7 +4,7 @@ metadata:
   name: app-slug
 spec:
   title: App Name
-  icon: https://github.com/cncf/artwork/blob/master/projects/kubernetes/icon/color/kubernetes-icon-color.png
+  icon: https://github.com/cncf/artwork/blob/master/projects/kubernetes/icon/color/kubernetes-icon-color.png?raw=true
   statusInformers:
     - deployment/example-nginx
   ports:

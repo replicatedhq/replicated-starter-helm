@@ -2,7 +2,7 @@ SHELL := /bin/bash -o pipefail
 
 app_slug := "${REPLICATED_APP}"
 
-# Generate channel and release notes. We need to do this differently for github actions vs. command line because of how git works differently in GH actions. 
+# Generate channel and release notes. We need to do this differently for github actions vs. command line because of how git works differently in GH actions.
 ifeq ($(origin GITHUB_ACTIONS), undefined)
 release_notes := "CLI release of $(shell git symbolic-ref HEAD) triggered by ${shell git config --global user.name}: $(shell basename $$(git remote get-url origin) .git) [SHA: $(shell git rev-parse HEAD)]"
 channel := $(shell git rev-parse --abbrev-ref HEAD)
@@ -13,6 +13,11 @@ endif
 
 # If we're on the master channel, translate that to the "Unstable" channel
 ifeq ($(channel), master)
+channel := Unstable
+endif
+#
+# If we're on the main channel, translate that to the "Unstable" channel
+ifeq ($(channel), main)
 channel := Unstable
 endif
 

@@ -22,6 +22,9 @@ endif
 ifeq ($(channel), master)
 channel := Unstable
 endif
+ifeq ($(channel), main)
+channel := Unstable
+endif
 version := $(channel)-$(shell git rev-parse HEAD | head -c7)$(shell git diff --no-ext-diff --quiet --exit-code || echo "-dirty")
 else
 channel := "Beta"
