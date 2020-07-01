@@ -10,7 +10,7 @@ spec:
         selector:
           - app=example
           - component=nginx
-        namespace: repl{{ Namespace }}
+        namespace: '{{repl Namespace }}'
         limits:
           maxAge: 30d
           maxLines: 10000
