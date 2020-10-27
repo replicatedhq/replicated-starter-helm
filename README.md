@@ -29,7 +29,7 @@ brew install replicatedhq/replicated/cli
 
 ##### Manual
 
-```
+```shell script
 curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
            | grep "browser_download_url.*$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz" \
            | cut -d : -f 2,3 \
@@ -37,8 +37,12 @@ curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
            | cat <( echo -n "url") - \
            | curl -fsSL -K- \
            | tar xvz replicated
+```
 
-# place somewhere in your PATH
+Then move `./replicated` to somewhere in your `PATH`:
+
+
+```shell script
 mv replicated /usr/local/bin/
 ```
 
@@ -127,7 +131,7 @@ This repo contains a [GitHub Actions](https://help.github.com/en/github/automati
 
 ### Integrating kurl installer yaml
 
-There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https://kurl.sh) installer versions for an embedded Kubernetes cluster. This isn't released by default in the GitHub action, but it can be released, either locally or in CI, by running the following.
+There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https://kurl.sh) installer versions for an embedded Kubernetes cluster. This will be automatically released in CI.
 
 ```
 replicated installer create --auto
