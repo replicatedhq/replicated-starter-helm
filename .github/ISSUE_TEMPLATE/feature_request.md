@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Request a feature for KOTS / Replicated
-title: VENDOR Request - FEATURE
+title: 'Title: Brief summary of the feature request'
 labels: enhancement
 assignees: dexhorthy
 
