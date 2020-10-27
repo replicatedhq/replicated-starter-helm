@@ -13,6 +13,57 @@ You should use the template to create a new **private** repo in your org, for ex
 
 Once you've created a repository from the template, you'll want to `git clone` your new repo and `cd` into it locally.
 
+
+#### Install CLI
+
+### 1. Install CLI
+
+To start, you'll want to install the `replicated` CLI.
+You can install with [homebrew](https://brew.sh) or grab the latest Linux or macOS version from [the replicatedhq/replicated releases page](https://github.com/replicatedhq/replicated/releases).
+
+##### Brew
+
+```shell script
+brew install replicatedhq/replicated/cli
+```
+
+##### Manual
+
+```
+curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
+           | grep "browser_download_url.*$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz" \
+           | cut -d : -f 2,3 \
+           | tr -d \" \
+           | cat <( echo -n "url") - \
+           | curl -fsSL -K- \
+           | tar xvz replicated
+
+# place somewhere in your PATH
+mv replicated /usr/local/bin/
+```
+
+##### Verifying
+
+You can verify it's installed with `replicated version`:
+
+```text
+$ replicated version
+```
+```json
+{
+  "version": "0.31.0",
+  "git": "c67210a",
+  "buildTime": "2020-09-03T18:31:11Z",
+  "go": {
+      "version": "go1.14.7",
+      "compiler": "gc",
+      "os": "darwin",
+      "arch": "amd64"
+  }
+}
+```
+
+
 #### Configure environment
 
 You'll need to set up two environment variables to interact with vendor.replicated.com:
@@ -41,21 +92,27 @@ export REPLICATED_API_TOKEN=...
 You can ensure this is working with
 
 ```
-make list-releases
+replicated release ls
 ```
 
 #### Iterating on your release
 
-Once you've made changes to `replicated.yaml`, you can push a new release to a channel with
+Once you've made changes to your manifests, lint them with
 
 ```
-make release
+replicated release lint --yaml-dir=manifests
 ```
 
-By default the `Unstable` channel will be used. You can override this with `channel`:
+You can push a new release to a channel with
 
 ```
-make release channel=Beta
+replicated release create --auto
+```
+
+By default the `Unstable` channel will be used. You can override this with the `promote` flag:
+
+```
+replicated release create --auto --promote=Beta
 ```
 
 
@@ -73,7 +130,7 @@ This repo contains a [GitHub Actions](https://help.github.com/en/github/automati
 There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https://kurl.sh) installer versions for an embedded Kubernetes cluster. This isn't released by default in the GitHub action, but it can be released, either locally or in CI, by running the following.
 
 ```
-make release-kurl-installer
+replicated installer create --auto
 ```
 
 
