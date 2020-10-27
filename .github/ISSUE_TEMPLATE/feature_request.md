@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Request a feature for KOTS / Replicated
 title: VENDOR Request - FEATURE
 labels: enhancement
 assignees: dexhorthy
