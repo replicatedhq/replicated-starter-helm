@@ -11,7 +11,11 @@ Please provide a clear and concise description of what the problem is. Use MANY 
 Ex. As a vendor, I'm prevented from doing X when I click on Y [...]
 
 **Customer Impact**
-Not just “high”, but some commentary on how customers are affected; are they affected on every install, or just occasionally; when they are affected, is it just a little annoying, or does it jeopardize revenue? How many customers are affected? What is the business problem this feature request would solve?
+Not just “high”, but some commentary on how customers are affected:
+- are they affected on every install, or just occasionally?
+- when they are affected, is it just a little annoying, or does it jeopardize revenue? 
+- How many customers are affected? 
+- What is the business problem this feature request would solve?
 
 **Describe possible workarounds**
 A clear and concise description of any alternative solutions or features you've considered.
