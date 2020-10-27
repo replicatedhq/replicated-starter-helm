@@ -109,7 +109,7 @@ You can push a new release to a channel with
 replicated release create --auto
 ```
 
-By default the `Unstable` channel will be used. You can override this with the `promote` flag:
+By default the `Unstable` channel will be used. You can override this with the `--promote` flag:
 
 ```
 replicated release create --auto --promote=Beta
