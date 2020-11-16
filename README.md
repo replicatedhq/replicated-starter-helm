@@ -38,7 +38,6 @@ curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
            | curl -fsSL -K- \
            | tar xvz replicated
 ```
-
 Then move `./replicated` to somewhere in your `PATH`:
 
 
@@ -125,22 +124,17 @@ replicated release create --auto --promote=Beta
 This repo contains a [GitHub Actions](https://help.github.com/en/github/automating-your-workflow-with-github-actions/about-github-actions) workflow for ci at [./.github/workflows/main.yml](./.github/workflows/main.yml). You'll need to [configure secrets](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) for `REPLICATED_APP` and `REPLICATED_API_TOKEN`. On every push this will:
 
 - Ensure a channel exists for the branch that was pushed to
-- Create a release based on the contents of
+- Create a release based on the contents of `./manifests`
 
 ## Advanced Usage
 
 ### Integrating kurl installer yaml
 
-There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https://kurl.sh) installer versions for an embedded Kubernetes cluster. This will be automatically released in CI.
+There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https://kurl.sh) installer versions for an embedded Kubernetes cluster. This will be automatically released in CI. You can create a release manually with
 
 ```
 replicated installer create --auto
 ```
-
-
-### Advanced Tagging Workflow
-
-There is also a Makefile.advanced with a powerful workflow for tagging and releasing new versions.
 
 ### Tools reference
 
