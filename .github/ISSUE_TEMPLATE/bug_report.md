@@ -11,15 +11,16 @@ assignees: ''
 <!--
 KOTS version if existing cluster, kURL spec URL if embedded cluster
 -->
-
-- [ ] Airgap
 - Datacenter: <!-- AWS, GCP, VSphere, Bare Metal, etc. -->
+
 - [ ] Existing Cluster
   - Kubernetes Distribution: <!-- EKS, GKE, AKS, Openshift, PKS, Tanzu, etc -->
 
 - [ ] Embedded Cluster
   - Operating System Flavor and Version: <!-- Ubuntu, CentOS, RHEL -->
   - kURL installer URL <!-- https://kurl.sh/my-app -->
+
+- [ ] Airgap
 
 ## Describe the Bug
 <!-- Describe the issue, what is happening -->
