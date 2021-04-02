@@ -9,8 +9,13 @@ spec:
     version: latest
   weave:
     version: latest
-  rook:
+  minio:
     version: latest
+  openebs:
+    version: latest
+    namespace: "openebs"
+    isLocalPVEnabled: true
+    localPVStorageClassName: default
   contour:
     version: latest
   registry:
