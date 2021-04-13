@@ -24,4 +24,6 @@ spec:
     version: latest
   kotsadm:
     version: latest
+  ekco:
+    version: latest
 
