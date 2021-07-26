@@ -12,5 +12,5 @@ spec:
           - component=nginx
         namespace: '{{repl Namespace }}'
         limits:
-          maxAge: 30d
+          maxAge: 720h
           maxLines: 10000
