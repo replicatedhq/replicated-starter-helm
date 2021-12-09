@@ -38,4 +38,3 @@ KOTS version if existing cluster, kURL spec URL if embedded cluster
 <!-- Not just “high”, but some commentary on how customers are affected; are they affected on every install, or just occasionally; when they are affected, is it just a little annoying, or does it jeopardize revenue? Are there workarounds? If so, what are they? How many customers are affected? What is the business problem this feature request would solve? -->
 
 ## Additional Information
-
