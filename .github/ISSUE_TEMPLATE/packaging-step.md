@@ -3,7 +3,7 @@ name: Packaging Step
 about: Track integration / packaging work that needs to be done to improve reliability
   or get the application ready for a particular customer environment
 title: ''
-labels: board::day0
+labels: board::packaging-step
 assignees: ''
 
 ---
