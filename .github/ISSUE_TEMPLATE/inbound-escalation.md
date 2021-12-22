@@ -2,7 +2,7 @@
 name: Inbound Escalation
 about: An inbound escalation or other support issue
 title: ''
-labels: board::inbound-escalation
+labels: board::inbound-escalation,inbound-escalation
 assignees: ''
 
 ---
