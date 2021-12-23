@@ -1,0 +1,42 @@
+
+on:
+  issues:
+    types: [opened]
+
+name: Issue Comments
+jobs:
+  check_comments:
+    name: Add issue to the correct board
+    runs-on: ubuntu-latest
+    if: contains(join(github.event.issue.labels.*.name, ' '), 'board::inbound-escalation')
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+                const projects = await github.projects.listForRepo({
+                  owner: context.payload.repository.owner.login,
+                  repo: context.payload.repository.name,
+                });
+                // there should always be exactly one
+                const escalationProj = projects.data.filter(
+                    (p) => p.name.indexOf("Inbound Escalations") !== -1
+                )[0];
+                if (!escalationProj) {
+                  core.setFailed("Could not find a board called 'Inbound Escalations'");
+                }
+                core.info("found escalation project");
+                const columns = await github.projects.listColumns({
+                  project_id: escalationProj.id,
+                });
+                const newIssuesColumn = columns.data.filter((c) => c.name == "New")[0];
+                if (!newIssuesColumn) {
+                  core.setFailed("Could not find a column called 'New'");
+                }
+                core.info("New issues column project");
+                
+                await github.projects.createCard({
+                  column_id: newIssuesColumn.id,
+                  content_id: context.payload.issue.id,
+                  content_type: "Issue",
+                })
