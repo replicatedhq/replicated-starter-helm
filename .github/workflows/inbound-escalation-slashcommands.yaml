@@ -26,11 +26,12 @@ jobs:
                     } catch (e) {
                       core.setFailed("failed to verify repo membership");
                     }
+                    
                     core.info("repo check done");
-                    const projects = await github.projects.listForRepo({
-                      owner: context.payload.repository.owner.login,
-                      repo: context.payload.repository.name,
-                    });
+                    const owner = context.payload.repository.owner.login;
+                    const repo = context.payload.repository.name;
+
+                    const projects = await github.projects.listForRepo({ owner, repo });
                     // there should always be exactly one
                     const escalationProj = projects.data.filter(
                       (p) => p.name.indexOf("Inbound Escalations") !== -1
@@ -100,6 +101,11 @@ jobs:
                         card_id: thisCard.id,
                         position: "bottom",
                         column_id: closedColumn.id,
+                      });
+                      github.issues.update({
+                        owner, repo,
+                        issue_number: context.payload.issue.number,
+                        state: "closed",
                       });
                     } else if (context.payload.comment.body.indexOf("/pending") !== -1) {
                       core.info("moving to Pending");
