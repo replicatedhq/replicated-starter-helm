@@ -95,6 +95,11 @@ jobs:
                         position: "bottom",
                         column_id: openColumn.id,
                       });
+                      github.issues.update({
+                        owner, repo,
+                        issue_number: context.payload.issue.number,
+                        state: "open",
+                      });
                     } else if (context.payload.comment.body.indexOf("/close") !== -1) {
                       core.info("moving to Closed");
                       github.projects.moveCard({
@@ -113,5 +118,10 @@ jobs:
                         card_id: thisCard.id,
                         position: "bottom",
                         column_id: pendingColumn.id,
+                      });
+                      github.issues.update({
+                        owner, repo,
+                        issue_number: context.payload.issue.number,
+                        state: "open",
                       });
                     }
