@@ -2,7 +2,7 @@
 name: Bug Report
 about: File a Bug Report
 title: 'Title: Short description of the bug'
-labels: 'board::enhancements'
+labels: 'project::enhancements'
 assignees: ''
 
 ---

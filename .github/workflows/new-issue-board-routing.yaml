@@ -5,8 +5,8 @@ on:
 
 name: Issue Comments
 jobs:
-  check_comments:
-    name: Add issue to the correct board
+  ie-project:
+    name: Add issue to the Inbound Escalations project
     runs-on: ubuntu-latest
     if: "contains(join(github.event.issue.labels.*.name, ' '), 'inbound-escalation')" 
     steps:
@@ -23,7 +23,7 @@ jobs:
                     (p) => p.name.indexOf("Inbound Escalations") !== -1
                 )[0];
                 if (!escalationProj) {
-                  core.setFailed("Could not find a board called 'Inbound Escalations'");
+                  core.setFailed("Could not find a project called 'Inbound Escalations'");
                 }
                 core.info("found escalation project");
                 const columns = await github.projects.listColumns({
@@ -40,3 +40,38 @@ jobs:
                   content_id: context.payload.issue.id,
                   content_type: "Issue",
                 })
+  npi-project:
+    name: Add issue to the New Production Installs project
+    runs-on: ubuntu-latest
+    if: "contains(join(github.event.issue.labels.*.name, ' '), 'project::new-production-install')"
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const projects = await github.projects.listForRepo({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+            });
+            // there should always be exactly one
+            const escalationProj = projects.data.filter(
+                (p) => p.name.indexOf("New Production Installs") !== -1
+            )[0];
+            if (!escalationProj) {
+              core.setFailed("Could not find a project called 'New Production Installs'");
+            }
+            core.info("found escalation project");
+            const columns = await github.projects.listColumns({
+              project_id: escalationProj.id,
+            });
+            const newIssuesColumn = columns.data.filter((c) => c.name == "Not Ready")[0];
+            if (!newIssuesColumn) {
+              core.setFailed("Could not find a column called 'Not Ready'");
+            }
+            core.info("New issues column project");
+
+            await github.projects.createCard({
+              column_id: newIssuesColumn.id,
+              content_id: context.payload.issue.id,
+              content_type: "Issue",
+            })
