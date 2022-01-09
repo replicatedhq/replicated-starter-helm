@@ -13,13 +13,14 @@ assignees: ''
 
 - [ ] Internal Development Server
 - [ ] Customer Impacting
-
-- [ ] Application is down in a Customer environment
-- [ ] Problem can be reproduced in multiple environments
+- [ ] Application is down in an end user environment
+- [ ] Problem can be reproduced in more than one environment
 
 #### Application
-<!-- Which application is the in regard to? -->
+<!-- Is this in regard to a particular application? -->
 
+#### Customer
+<!-- Is this in regard to a particular end user installation? -->
 
 #### Support Bundle
 <!-- Drag and drop one or more support bundles below -->
