@@ -62,9 +62,9 @@ Operating System (if embedded):
 Cluster Flavor (if existing):
 
 Ingress Strategy:
-<!-- How will the end user interact with the application and with the app manager UI? Will there be a load balancer in front of a VM? Do they have an existing ingress or service mesh controller that must be used? Do any services require Node Ports?
+<!-- How will the end user interact with the application and with the app manager UI? Will there be a load balancer in front of a VM? Do they have an existing ingress or service mesh controller that must be used? Do any services require Node Ports? -->
 
 Datacenter:
-<!-- Is this AWS? Bare Metal? VSphere? GCP? Azure? Something else? →
+<!-- Is this AWS? Bare Metal? VSphere? GCP? Azure? Something else? -->
 
 Additional Details:
