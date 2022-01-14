@@ -11,7 +11,7 @@ assignees: ''
 
 #### Installation Type
 
-- [ ] Internal Development Server
+- [ ] Internal Development Environment
 - [ ] Customer Impacting
 - [ ] Application is down in an end user environment
 - [ ] Problem can be reproduced in more than one environment
