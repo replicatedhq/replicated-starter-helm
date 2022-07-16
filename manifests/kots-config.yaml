@@ -10,7 +10,7 @@ spec:
       items:
         - name: use_ingress
           title: Use Ingress?
-          help_text: An example field to toggle inclusion of an Ingress Object
+          help_text: An example field to toggle inclusion of an Ingress Object. This help text supports `markdown` and [links](https://kubernetes.io).
           type: bool
           default: "0"
         - name: ingress_hostname
