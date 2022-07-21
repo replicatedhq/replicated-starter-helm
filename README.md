@@ -3,6 +3,15 @@ Replicated Kubernetes Starter
 
 Example project showcasing how power users can leverage the Replicated CLI Tools to manage kots YAMLs using a git repository.
 
+### Helm chart Version!
+
+This is an experimental (For now) version that allows you to add a few replicated manifests directly in your helm chart's working directory. To release:
+
+```
+helm package . -d manifests/
+replicated release create --auto -y
+```
+
 ### Get started
 
 This repo is a [GitHub Template Repository](https://help.github.com/en/articles/creating-a-repository-from-a-template). You can create a private copy by using the "Use this Template" link in the repo:
