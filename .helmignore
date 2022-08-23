@@ -22,6 +22,4 @@
 *.tmproj
 .vscode/
 manifests/
-kurl-installer.yaml
-.helmignore
-.github
+doc/
