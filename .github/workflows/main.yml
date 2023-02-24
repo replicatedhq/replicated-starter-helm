@@ -19,6 +19,8 @@ jobs:
     - name: Get branch name
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: get_branch
+    - name: Get branch name
+      run: helm package . -d manifests/
     - name: Create a release on Channel associated with the branch
       uses: docker://replicated/vendor-cli:latest
       with:
