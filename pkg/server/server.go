@@ -24,7 +24,6 @@ func Main() error {
 	apiRoutes := router.Group("/api")
 	apiRoutes.GET("/healthz", handlers.Healthz)
 	apiRoutes.GET("/config", handlers.ClientConfig)
-	apiRoutes.POST("/submit", handlers.Submit)
 
 	if config.StaticDir != "" {
 		fmt.Println("adding static handler")

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Form from "./Form";
 
 const Loading = () => (
   <div
@@ -13,6 +12,7 @@ const Loading = () => (
 
 function App() {
   const [config, setConfig] = useState("");
+
   useEffect(() => {
     const url = "/api/config";
 
@@ -31,15 +31,18 @@ function App() {
 
   return (
     <div className="App">
-      {!config && Loading()}
+      {(!config && Loading()) || (
       <div>
         <div>
           <h1>{config.title}</h1>
           <section className="container">
-            {Form(config.title, config.introMarkdown, config.installMarkdown)}
+            {config.introMarkdown}
           </section>
+          <pre style={{textAlign: "left"}}>
+            {JSON.stringify(JSON.parse(config.gitHubUser), null, 2)}
+          </pre>
         </div>
-      </div>
+      </div>)}
     </div>
   );
 }
