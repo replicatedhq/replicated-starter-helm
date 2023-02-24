@@ -32,7 +32,7 @@ type ServerConfig struct {
 
 func DefaultConfig() ServerConfig {
 	return ServerConfig{
-		GinAddress:    ":8800",
+		GinAddress:    ":8888",
 		ProxyFrontend: "http://localhost:3000",
 
 		Title:         "GitHub UserView",

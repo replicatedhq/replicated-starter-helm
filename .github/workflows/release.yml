@@ -1,4 +1,4 @@
-name: Create a new release if app source or k8s manifests changed
+name: Create a new release of the docker image
 
 env:
   REGISTRY: ghcr.io
@@ -41,6 +41,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
+            type=sha
 
 
       - name: Build and push Docker image
