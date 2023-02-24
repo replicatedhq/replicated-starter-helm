@@ -4,7 +4,7 @@ metadata:
   name: wordpress-enterprise
 spec:
   chart:
-    name: MYAPP
+    name: replicated-starter-kots
     chartVersion: 0.1.0
 
   # helmVersion identifies the Helm Version used to render the chart. Default is v2.

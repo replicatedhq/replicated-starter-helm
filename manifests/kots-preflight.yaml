@@ -16,13 +16,6 @@ spec:
               uri: https://kubernetes.io
           - pass:
               message: Your cluster meets the recommended and required versions of Kubernetes.
-    - containerRuntime:
-        outcomes:
-          - pass:
-              when: "== docker"
-              message: Docker container runtime was found.
-          - fail:
-              message: Did not find Docker container runtime.
     - distribution:
         checkName: Check Kubernetes environment.
         outcomes:
