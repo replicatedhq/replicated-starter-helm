@@ -12,9 +12,10 @@ helm package . -d manifests/
 replicated release create --auto -y
 ```
 
+**If you already have a helm chart, you should be aware of [Importing an Existing Chart](#already-have-a-helm-chart) before you start setup.** 
+
 ## Get started
 
-**If you already have a helm chart, you should be aware of [Importing an Existing Chart](#already-have-a-helm-chart) before you start setup.** 
 
 ### Copy and Clone
 
