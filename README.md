@@ -1,11 +1,9 @@
-Replicated Kubernetes Starter
+Replicated Helm Starter
 ==================
 
-Example project showcasing how power users can leverage the Replicated CLI Tools to manage kots YAMLs using a git repository.
+Example project showcasing how power users can leverage the Replicated CLI Tools to manage a helm chart that can be delivered via Replciated.
 
-## Helm chart Version!
-
-This is an experimental (For now) version that allows you to add a few replicated manifests directly in your helm chart's working directory. To release:
+This helm version of https://github.com/replicatedhq/replciated-starter-kots adds replicated manifests directly in a helm chart's working directory. To release:
 
 ```
 helm package . -d manifests/
