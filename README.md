@@ -3,7 +3,7 @@ Replicated Kubernetes Starter
 
 Example project showcasing how power users can leverage the Replicated CLI Tools to manage kots YAMLs using a git repository.
 
-### Helm chart Version!
+## Helm chart Version!
 
 This is an experimental (For now) version that allows you to add a few replicated manifests directly in your helm chart's working directory. To release:
 
@@ -12,31 +12,34 @@ helm package . -d manifests/
 replicated release create --auto -y
 ```
 
-### Get started
+## Get started
+
+**If you already have a helm chart, you should be aware of [Importing an Existing Chart](#already-have-a-helm-chart) before you start setup.** 
+
+### Copy and Clone
 
 This repo is a [GitHub Template Repository](https://help.github.com/en/articles/creating-a-repository-from-a-template). You can create a private copy by using the "Use this Template" link in the repo:
 
-![Template Repo](https://help.github.com/assets/images/help/repository/use-this-template-button.png)
+![Template Repo](https://docs.github.com/assets/cb-95207/mw-1000/images/help/repository/use-this-template-button.webp)
 
-You should use the template to create a new **private** repo in your org, for example `mycompany/kots-app` or `mycompany/replicated-starter-kots`.
+You should use the template to create a new **private** repo in your org, for example `mycompany/replicated-helm` or `mycompany/replicated-starter-helm`.
 
 Once you've created a repository from the template, you'll want to `git clone` your new repo and `cd` into it locally.
 
 
-#### Install CLI
 
 ### 1. Install CLI
 
 To start, you'll want to install the `replicated` CLI.
 You can install with [homebrew](https://brew.sh) or grab the latest Linux or macOS version from [the replicatedhq/replicated releases page](https://github.com/replicatedhq/replicated/releases).
 
-##### Brew
+#### Brew
 
 ```shell script
 brew install replicatedhq/replicated/cli
 ```
 
-##### Manual
+#### Manual
 
 ```shell script
 curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
@@ -54,7 +57,7 @@ Then move `./replicated` to somewhere in your `PATH`:
 mv replicated /usr/local/bin/
 ```
 
-##### Verifying
+#### Verifying
 
 You can verify it's installed with `replicated version`:
 
@@ -76,7 +79,7 @@ $ replicated version
 ```
 
 
-#### Configure environment
+### Configure environment
 
 You'll need to set up two environment variables to interact with vendor.replicated.com:
 
@@ -107,7 +110,7 @@ You can ensure this is working with
 replicated release ls
 ```
 
-#### Iterating on your release
+### Iterating on your release
 
 Once you've made changes to your manifests, lint them with
 
@@ -127,8 +130,19 @@ By default the `Unstable` channel will be used. You can override this with the `
 replicated release create --auto --promote=Beta
 ```
 
+## Already Have a Helm Chart?
 
-### Integrating with CI
+
+This is meant as a hello-world style starter where you'll just modify the templates/values/etc in this repo directly to develop your app, however you may already have a helm chart you want to use.
+
+In this case you have a few options:
+
+1. Grab the replicated-specific files from this repo and add them to your helm chart (`manifests/`, `.github/workflows/main.yml`, `kurl-installer.yml`, merge in `.helmignore`)
+1. Remove the templates and values from this chart, and just use this repo as an umbrella chart that includes your main chart as a helm `dependency` in `Chart.yaml` (run `helm dependency update` before `helm package . -d manifests/`)
+1. Remove all helm manifests from this repo, and configure a pipeline to manually new chart versions as `.tgz` archives into `manifests/` and then use `replicated release create` from there.
+
+
+## Integrating with CI
 
 This repo contains a [GitHub Actions](https://help.github.com/en/github/automating-your-workflow-with-github-actions/about-github-actions) workflow for ci at [./.github/workflows/main.yml](./.github/workflows/main.yml). You'll need to [configure secrets](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) for `REPLICATED_APP` and `REPLICATED_API_TOKEN`. On every push this will:
 
