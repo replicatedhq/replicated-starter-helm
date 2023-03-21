@@ -1,5 +1,55 @@
-# Default values for replicated-starter-kots.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+global:
+  labels: {}
+  annotations: {}
 
-replicaCount: 1
+apps:
+  vaultwarden:
+    enabled: true
+    type: deployment
+    replicas: 1
+    containers:
+      vaultwarden: 
+        image:
+          repository: vaultwarden/server
+          tag: 1.27.0-alpine
+
+services:
+  vaultwarden:
+    enabled: true
+    appName: vaultwarden
+    type: ClusterIP
+    ports:
+      http:
+        enabled: true
+        port: 8080
+        protocol: HTTP
+        targetPort: 80
+
+ingresses:
+  vaultwarden:
+    enabled: true
+    serviceName: vaultwarden
+    hosts:
+      - host: vaultwarden.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              port: 8080
+    tls:
+    - hosts:
+        - vaultwarden.example.com
+      secretName: vaultwarden-tls-secret
+
+persistence:
+  vaultwarden:
+    enabled: true
+    type: persistentVolumeClaim
+    persistentVolumeClaim:
+      spec:
+        storageClassName: default
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
