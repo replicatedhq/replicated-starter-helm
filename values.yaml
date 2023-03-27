@@ -12,6 +12,13 @@ apps:
         image:
           repository: vaultwarden/server
           tag: 1.27.0-alpine
+        volumeMounts:
+        - mountPath: /data
+          name: vaultwarden
+    volumes:
+    - name: vaultwarden
+      persistentVolumeClaim:
+        claimName: vaultwarden
 
 services:
   vaultwarden:
