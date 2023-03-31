@@ -26,7 +26,7 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.2.1
         with:
-          version: v3.7.1
+          version: v3.8.0
 
       - name: Run chart-testing (lint)
         run: ct lint --config ct.yaml --chart-dirs . --charts .
@@ -34,28 +34,9 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.5.0
 
-      # --skip-clean-up isn't currently released
-      #- name: Run chart-testing (install)
-      #  id: install
-      #  run: ct install --config ct.yaml --chart-dirs . --charts . --skip-clean-up
-
-      # Manually doing install and wait since chart-testing is removing the cluster
-      - name: install chart
+      - name: Run chart-testing (install)
         id: install
-        run: helm install -n default ci . -f values.yaml
-
-      - name: wait for pods
-        run: kubectl wait --for=condition=ready -n default po --all --timeout=60s
-
-      - name: wait for pvc
-        run: kubectl wait --for=jsonpath='{.status.phase}'=Bound -A pvc --all --timeout=10s
-
-      - name: wait for pv
-        run: kubectl wait --for=jsonpath='{.status.phase}'=Bound -A pv --all --timeout=10s
-
-      - name: test chart
-        id: test
-        run: helm test ci
+        run: ct install --config ct.yaml --chart-dirs . --charts . --skip-clean-up
 
       - name: install troubleshoot
         run: curl -L https://github.com/replicatedhq/troubleshoot/releases/latest/download/support-bundle_linux_amd64.tar.gz | tar xzvf -
