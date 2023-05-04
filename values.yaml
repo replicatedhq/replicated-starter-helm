@@ -1,12 +1,22 @@
 global:
   labels: {}
   annotations: {}
+  fullNameOverride: "-"
 
 apps:
   vaultwarden:
     enabled: true
     type: deployment
     replicas: 1
+    initContainers: 
+      copy-test:
+        image: 
+          repository: busybox
+          tag: latest
+        command: ['sh', '-c', 'echo "test" > /data/test.txt']
+        volumeMounts:
+        - mountPath: /data
+          name: vaultwarden
     containers:
       vaultwarden:
         image:
@@ -15,6 +25,12 @@ apps:
         volumeMounts:
         - mountPath: /data
           name: vaultwarden
+        ports:
+        - name: http
+          containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: vaultwarden
     volumes:
     - name: vaultwarden
       persistentVolumeClaim:
@@ -23,7 +39,7 @@ apps:
 services:
   vaultwarden:
     enabled: true
-    appName: vaultwarden
+    appName: ["vaultwarden"]
     type: ClusterIP
     ports:
       http:
@@ -47,6 +63,12 @@ ingresses:
     - hosts:
         - vaultwarden.example.com
       secretName: vaultwarden-tls-secret
+
+configmaps:
+  vaultwarden:
+    enabled: true
+    data:
+      SOME_VAR: "some-value"
 
 persistence:
   vaultwarden:
