@@ -43,7 +43,7 @@ jobs:
         if: success() || failure()
 
       - name: collect bundle
-        run: ./support-bundle --interactive=false -o ci-bundle https://raw.githubusercontent.com/replicatedhq/troubleshoot-specs/main/host/cluster-down.yaml https://raw.githubusercontent.com/replicatedhq/troubleshoot-specs/main/in-cluster/default.yaml 
+        run: ./support-bundle --interactive=false -o ci-bundle https://raw.githubusercontent.com/replicatedhq/troubleshoot-specs/main/host/default.yaml https://raw.githubusercontent.com/replicatedhq/troubleshoot-specs/main/in-cluster/default.yaml 
         if: success() || failure()
 
       - name: Upload support bundle artifact

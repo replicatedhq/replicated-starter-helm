@@ -8,9 +8,9 @@ apps:
     enabled: true
     type: deployment
     replicas: 1
-    initContainers: 
+    initContainers:
       copy-test:
-        image: 
+        image:
           repository: busybox
           tag: latest
         command: ['sh', '-c', 'echo "test" > /data/test.txt']
