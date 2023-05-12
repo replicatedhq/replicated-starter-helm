@@ -15,7 +15,7 @@ spec:
   openebs:
     version: 3.4.x
     isLocalPVEnabled: true
-    localPVStorageClassName: default
+    localPVStorageClassName: local
   prometheus:
     version: 0.63.x
   registry:

@@ -8,8 +8,7 @@ spec:
     - clusterResources: {}
     - logs:
         selector:
-          - app=example
-          - component=nginx
+          - app.kubernetes.io/name=vaultwarden
         namespace: '{{repl Namespace }}'
         limits:
           maxAge: 720h
