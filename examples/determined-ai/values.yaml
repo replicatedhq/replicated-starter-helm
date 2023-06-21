@@ -1,0 +1,173 @@
+global:
+  labels: {}
+  annotations: {}
+  fullNameOverride: "-"
+
+apps:
+  determined:
+    enabled: true
+    type: deployment
+    replicas: 1
+    priorityClassName: determined-system-priority
+    serviceAccount:
+      create: false
+      name: determined-master
+    containers:
+      determined:
+        image:
+          repository: determinedai/determined-master
+          tag: 0.23.0
+        volumeMounts:
+        - name: master-config
+          mountPath: /etc/determined/
+          readOnly: true
+        ports:
+        - name: http
+          containerPort: 8081
+    volumes:
+      - name: master-config
+        secret:
+          secretName: determined
+
+services:
+  determined:
+    enabled: true
+    appName: ["determined"]
+    type: ClusterIP
+    ports:
+      http:
+        enabled: true
+        port: 8081
+        protocol: HTTP
+        targetPort: 8081
+
+ingresses:
+  determined:
+    enabled: true
+    serviceName: determined
+    hosts:
+      - host: determined.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              port: 8081
+    tls:
+    - hosts:
+        - determined.example.com
+      secretName: determined-tls-secret
+
+secrets:
+  determined:
+    enabled: true
+    data:
+      test: hello
+
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 15.3.0-debian-11-r0
+  fullnameOverride: postgresql
+  auth:
+    postgresPassword: "determined"
+
+determined:
+  masterPort: 8081
+  useNodePortForMaster: false
+  db:
+    name: postgres
+    user: postgres
+    password: determined
+    port: 5432
+  storageSize: 30Gi
+  cpuRequest: 1
+  memRequest: 2Gi
+  #  cpuLimit: 2
+  #  memLimit: 8Gi
+  useNodePortForDB: false
+  checkpointStorage:
+    # Applicable to all checkpointStorage types.
+    saveExperimentBest: 0
+    saveTrialBest: 1
+    saveTrialLatest: 1
+  
+    # Comment out if not using `shared_fs`. Users are strongly discouraged from using `shared_fs` for
+    # storage beyond initial testing as most Kubernetes cluster nodes do not have a shared file
+    # system.
+    type: shared_fs
+    hostPath: /checkpoints
+    # For storing in GCS.
+    # type: gcs
+    # bucket: <bucket_name>
+    # prefix: <prefix>
+
+    # For storing in S3.
+    # type: s3
+    # bucket: <bucket_name>
+    # accessKey: <access_key>
+    # secretKey: <secret_key>
+    # endpointUrl: <endpoint_url>
+    # prefix: <prefix>
+
+    # For storing in Azure Blob Storage with a connection string.
+    # Do NOT use if already using Azure Blob Storage with account URL
+    # type: azure
+    # container: <container_name>
+    # connection_string: <connection_string>
+
+    # For storing in Azure Blob Storage with an account URL.
+    # Do NOT use if already using Azure Blob Storage with connection string.
+    # The `credential` field is optional.
+    # type: azure
+    # container: <container_name>
+    # account_url: <account_url>
+    # credential: <credential>
+  maxSlotsPerPod: 0
+  ## For CPU-only clusters, use `slotType: cpu`, and make sure to set `slotResourceRequest` below.
+  slotType: cpu
+  slotResourceRequests:
+  ## Number of cpu units requested for compute slots. Note: since kubernetes may schedule some
+  ## system tasks on the nodes which take up some resources, 8-core node may not always fit
+  ## a `cpu: 8` task container.
+    cpu: 1
+
+  # Memory and CPU requirements for the master instance. Should be adjusted for scale.
+  masterCpuRequest: 1
+  masterMemRequest: 2Gi
+  # masterCpuLimit: 2
+  # masterMemLimit: 8Gi
+
+  ## Configure the task container defaults. Tasks include trials, commands, TensorBoards, notebooks,
+  ## and shells. For all task containers, shm_size_bytes and network_mode are configurable. For
+  ## trials, the network interface used by distributed (multi-machine) training is configurable.
+  taskContainerDefaults:
+    # networkMode: bridge
+    # dtrainNetworkInterface: <network interface name>
+    # forcePullImage: <true or false>
+
+    # Configure a default pod spec for all GPU tasks (experiments, notebooks, commands) and CPU tasks
+    # (CPU notebooks, TensorBoards, zero-slot commands). If a pod spec is defined for an individual
+    # task, that pod spec will replace the default one that is defined here. See
+    # https://docs:determined.ai/latest/topic-guides/custom-pod-specs.html for more details.
+    # cpuPodSpec:
+    # gpuPodSpec:
+  
+
+    # Configure default Docker images for all GPU tasks (experiments, notebooks, commands) and
+    # CPU tasks (CPU notebooks, TensorBoards, zero-slot commands). If a Docker image is defined
+    # for an individual task, that image will replace the default one that is defined here.
+    # If specifying a default image, both GPU and CPU default images must be defined.
+    # cpuImage:
+    # gpuImage:
+
+  ## Configure whether we collect anonymous information about the usage of Determined.
+  telemetry:
+    enabled: true
+
+  ## Configure the resource pools in the Determined cluster.
+  resourcePools:
+    - pool_name: default
+  # defaultAuxResourcePool: default
+  # defaultComputeResourcePool: default
