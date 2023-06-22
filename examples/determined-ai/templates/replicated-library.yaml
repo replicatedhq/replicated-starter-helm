@@ -39,15 +39,19 @@ secrets:
           save_trial_best: {{ .Values.determined.checkpointStorage.saveTrialBest | default 1 }}
           save_trial_latest: {{ .Values.determined.checkpointStorage.saveTrialLatest | default 1 }}
         db:
-          user: {{ required "A valid Values.db.user entry required!" .Values.determined.db.user | quote }}
-          password: {{ required "A valid Values.db.password entry required!" .Values.determined.db.password | quote }}
-          {{- if .Values.determined.db.hostAddress }}
-          host: {{ .Values.determined.db.hostAddress }}
-          {{- else }}
+        {{- if .Values.determined.externalPostgres.enabled }}
+          user: {{ required "A valid .Values.determined.externalPostgres.username entry required!" .Values.determined.externalPostgres.username | quote }}
+          password: {{ required "A valid Values.determined.externalPostgres.password entry required!" .Values.determined.externalPostgres.password | quote }}
+          host: {{ .Values.determined.externalPostgres.host }}
+          port: {{ .Values.determined.externalPostgres.port }}
+          name: {{ .Values.determined.externalPostgres.name | quote }}
+        {{- else }}
+          user: postgresql
+          password: {{ required "A valid Values.determined.postgresPassword entry required!" .Values.determined.postgresPassword | quote }}
           host: postgresql
-          {{- end  }}
-          port: {{ .Values.determined.db.port }}
-          name: {{ .Values.determined.db.name | quote }}
+          port: 5432
+          name: postgres
+        {{- end }}
         port: {{ include "determined.masterPort" . }}
         resource_manager:
           type: "kubernetes"
