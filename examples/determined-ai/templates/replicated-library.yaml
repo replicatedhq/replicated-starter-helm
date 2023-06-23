@@ -1,7 +1,7 @@
 {{/* Make sure all variables are set properly */}}
 {{- include "replicated-library.values.setup" . }}
 
-{{- define "magda.var_dump" -}}
+{{- define "debug.print_var" -}}
 {{- . | toYaml | printf "\nThe YAML output of the dumped var is: \n%s" | fail }}
 {{- end -}}
 
@@ -46,7 +46,7 @@ secrets:
           port: {{ .Values.determined.externalPostgres.port }}
           name: {{ .Values.determined.externalPostgres.name | quote }}
         {{- else }}
-          user: postgresql
+          user: postgres
           password: {{ required "A valid Values.determined.postgresPassword entry required!" .Values.determined.postgresPassword | quote }}
           host: postgresql
           port: 5432

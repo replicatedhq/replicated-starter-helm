@@ -23,3 +23,5 @@
 .vscode/
 manifests/
 doc/
+kurl-installer.yaml
+ct.yaml
