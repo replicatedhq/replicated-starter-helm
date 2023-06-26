@@ -6,6 +6,28 @@
 {{- end -}}
 
 {{- define "hardcodedValues" -}}
+apps:
+  determined:
+    initContainers:
+      1-postgres-wait:
+        image:
+          repository: docker.io/bitnami/postgresql
+          tag: 15.3.0-debian-11-r0
+        env:
+        {{- if .Values.determined.externalPostgres.enabled }}
+          POSTGRES_USER: {{ required "A valid .Values.determined.externalPostgres.username entry required!" .Values.determined.externalPostgres.username | quote }}
+          POSTGRES_PASSWORD: {{ required "A valid Values.determined.externalPostgres.password entry required!" .Values.determined.externalPostgres.password | quote }}
+          POSTGRES_HOST: {{ .Values.determined.externalPostgres.host }}
+          POSTGRES_PORT: {{ .Values.determined.externalPostgres.port }}
+          POSTGRES_DB: {{ .Values.determined.externalPostgres.name | quote }}
+        {{- else }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: {{ required "A valid Values.determined.postgresPassword entry required!" .Values.determined.postgresPassword | quote }}
+          POSTGRES_HOST: postgresql
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: postgres
+        {{- end }}
+        command: ["sh", "-c", "until PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -h $POSTGRES_HOST -p 5432 -d $POSTGRES_DB -c 'SELECT 1'; do sleep 1; done;"]
 secrets:
   determined:
     data:

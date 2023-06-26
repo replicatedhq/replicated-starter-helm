@@ -1,4 +1,4 @@
-apiVersion: kots.io/v1beta1
+apiVersion: kots.io/v1beta2
 kind: HelmChart
 metadata:
   name: determined
@@ -7,14 +7,6 @@ spec:
   chart:
     name: determined
     chartVersion: 0.23.0
-
-  # helmVersion identifies the Helm Version used to render the Chart.
-  helmVersion: v3
-
-  # useHelmInstall identifies whether this Helm chart will use the
-  # Replicated Helm installation (false) or native Helm installation (true). Default is false.
-  # Native Helm installations are only available for Helm v3 charts.
-  useHelmInstall: true
 
   # values are used in the customer environment, as a pre-render step
   # these values will be supplied to helm template
@@ -34,7 +26,7 @@ spec:
     ingresses:
       determined:
         enabled: repl{{ ConfigOptionEquals "determined_ingress_type" "ingress_controller" }}
-        serviceName: determiend
+        serviceName: determined
         annotations: repl{{ ConfigOption "determined_ingress_annotations" | nindent 10 }}
         hosts:
           - host: 'repl{{ ConfigOption "determined_ingress_host"}}'
