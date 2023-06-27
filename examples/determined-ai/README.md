@@ -13,7 +13,7 @@ This example shows how to package an AI application as a KOTS app using the [Rep
 
 # Examples
 
-All of the below examples are snippets from the full example in this directory.
+All of the below examples are snippets from the full example chart in this directory
 
 ## Embedded vs. External Database
 
@@ -24,6 +24,7 @@ You may have the need to allow end-users to choose between hosting the database 
 [values.yaml](values.yaml)
 ```yaml
 postgresql:
+  # This is a subchart that we're importing from Bitnami
   enabled: true
   image:
     registry: docker.io
@@ -34,6 +35,7 @@ postgresql:
     postgresPassword: determined
 
 determined:
+  # Here is where we defined our custom values to implement our templating
   postgresPassword: determined
   externalPostgres:
     enabled: false
@@ -46,7 +48,7 @@ determined:
 
 **NOTE**: Determined AI uses a secret containing a config file where all of the application configuration lives including the database connection string. The below is a snippet from that configuration file where we are adding our templating. For you this same templating might be added in environment variables or elsewhere but the same logic applies.
 
-[master.yaml](templates/replicated-library.yaml)
+[replicated-library.yaml](templates/replicated-library.yaml)
 ```yaml
 secrets:
   determined:
@@ -121,20 +123,27 @@ secrets:
 
 [kots-helm.yaml](manifests/kots-helm.yaml)
 ```yaml
-postgresql:
-  enabled: 'repl{{ (ConfigOptionEquals "postgres_type" "embedded_postgres") }}'
-  auth:
-    postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
-
-determined:
-  postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
-  externalPostgresql:
-    enabled: repl{{ ConfigOptionEquals "postgres_type" "external_postgres" }}
-    username: 'repl{{ ConfigOption "external_postgres_username" }}'
-    password: 'repl{{ ConfigOption "external_postgres_password" }}'
-    database: 'repl{{ ConfigOption "external_postgres_db" }}'
-    host: 'repl{{ ConfigOption "external_postgres_host" }}'
-    port: 'repl{{ ConfigOption "external_postgres_port" }}'
+apiVersion: kots.io/v1beta2
+kind: HelmChart
+metadata:
+  name: determined
+spec:
+  values:
+  ...
+    postgresql:
+      enabled: 'repl{{ (ConfigOptionEquals "postgres_type" "embedded_postgres") }}'
+      auth:
+        postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
+    
+    determined:
+      postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
+      externalPostgresql:
+        enabled: repl{{ ConfigOptionEquals "postgres_type" "external_postgres" }}
+        username: 'repl{{ ConfigOption "external_postgres_username" }}'
+        password: 'repl{{ ConfigOption "external_postgres_password" }}'
+        database: 'repl{{ ConfigOption "external_postgres_db" }}'
+        host: 'repl{{ ConfigOption "external_postgres_host" }}'
+        port: 'repl{{ ConfigOption "external_postgres_port" }}'
 ```
 
 When the user sets the `postgres_type` to `external_postgres` in the KOTS config UI, additional config options are shown allowing them to specify the username, password, host, and port to connect to Postgres.
@@ -148,17 +157,16 @@ If you are providing a TLS secret with your app to terminate TLS at the Ingress 
 [values.yaml](values.yaml)
 ```yaml
 determined:
-...
-tls:
-  enabled: true
-  genSelfSignedCert: false
-  cert: |
-    -----BEGIN CERTIFICATE-----
-    -----END CERTIFICATE-----
-  key: |
-    -----BEGIN PRIVATE KEY-----
-    -----END PRIVATE KEY-----
-...
+  ...
+  tls:
+    enabled: true
+    genSelfSignedCert: false
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      -----END CERTIFICATE-----
+    key: |
+      -----BEGIN PRIVATE KEY-----
+      -----END PRIVATE KEY-----
 ```
 
 2. Add a tls secret to your chart and implement the templating to conditionally choose between user-provided and self-signed
@@ -188,39 +196,56 @@ type: kubernetes.io/tls
 
 [kots-config.yaml](manifests/kots-config.yaml)
 ```yaml
-- name: determined_ingress_tls_type
-  title: Determined Ingress TLS Type
-  type: select_one
-  items:
-  - name: self_signed
-    title: Self Signed (Generate Self Signed Certificate)
-  - name: user_provided
-    title: User Provided (Upload a TLS Certificate and Key Pair)
-  required: true
-  default: self_signed
-  when: 'repl{{ and (not IsKurl) (ConfigOptionEquals "determined_ingress_type" "ingress_controller") }}'
-- name: determined_ingress_tls_cert
-  title: Determined TLS Cert
-  type: file
-  when: '{{repl and (ConfigOptionEquals "determined_ingress_type" "ingress_controller") (ConfigOptionEquals "determined_ingress_tls_type" "user_provided") }}'
-  required: true
-- name: determined_ingress_tls_key
-  title: Determined TLS Key
-  type: file
-  when: '{{repl and (ConfigOptionEquals "determined_ingress_type" "ingress_controller") (ConfigOptionEquals "determined_ingress_tls_type" "user_provided") }}'
-  required: true
+apiVersion: kots.io/v1beta1
+kind: Config
+metadata:
+  name: config
+spec:
+  groups:
+  - name: ingress_settings
+    title: Ingress Settings
+    description: Configure Ingress for Determined
+    items:
+    ...
+    - name: determined_ingress_tls_type
+      title: Determined Ingress TLS Type
+      type: select_one
+      items:
+      - name: self_signed
+        title: Self Signed (Generate Self Signed Certificate)
+      - name: user_provided
+        title: User Provided (Upload a TLS Certificate and Key Pair)
+      required: true
+      default: self_signed
+      when: 'repl{{ and (not IsKurl) (ConfigOptionEquals "determined_ingress_type" "ingress_controller") }}'
+    - name: determined_ingress_tls_cert
+      title: Determined TLS Cert
+      type: file
+      when: '{{repl and (ConfigOptionEquals "determined_ingress_type" "ingress_controller") (ConfigOptionEquals "determined_ingress_tls_type" "user_provided") }}'
+      required: true
+    - name: determined_ingress_tls_key
+      title: Determined TLS Key
+      type: file
+      when: '{{repl and (ConfigOptionEquals "determined_ingress_type" "ingress_controller") (ConfigOptionEquals "determined_ingress_tls_type" "user_provided") }}'
+      required: true
 ```
 
 [kots-helm.yaml](manifests/kots-helm.yaml)
 ```yaml
-determined:
-...
-  tls:
-    enabled: repl{{ ConfigOptionEquals "determined_ingress_type" "ingress_controller" }}
-    genSelfSignedCert: repl{{ ConfigOptionEquals "determined_ingress_tls_type" "self_signed" }}
-    cert: repl{{ print `|`}}repl{{ ConfigOptionData `determined_ingress_tls_cert` | nindent 10 }}
-    key: repl{{ print `|`}}repl{{ ConfigOptionData `determined_ingress_tls_key` | nindent 10 }}
-...
+apiVersion: kots.io/v1beta2
+kind: HelmChart
+metadata:
+  name: determined
+spec:
+  values:
+    ...
+    determined:
+    ...
+      tls:
+        enabled: repl{{ ConfigOptionEquals "determined_ingress_type" "ingress_controller" }}
+        genSelfSignedCert: repl{{ ConfigOptionEquals "determined_ingress_tls_type" "self_signed" }}
+        cert: repl{{ print `|`}}repl{{ ConfigOptionData `determined_ingress_tls_cert` | nindent 10 }}
+        key: repl{{ print `|`}}repl{{ ConfigOptionData `determined_ingress_tls_key` | nindent 10 }}
 ```
 
 ## Pass Labels and Annotations from Config Options to Helm Chart Values
@@ -231,25 +256,39 @@ There may be a variety of different situations in which you'd want the user to b
 
 [kots-config.yaml](manifests/kots-config.yaml)
 ```yaml
-...
-- name: determined_load_balancer_annotations
-  type: textarea
-  title: Load Balancer Annotations
-  help_text: See your cloud provider’s documentation for the required annotations.
-  when: 'repl{{ and (not IsKurl) (ConfigOptionEquals "determined_ingress_type" "load_balancer") }}'
-...
+apiVersion: kots.io/v1beta1
+kind: Config
+metadata:
+  name: config
+spec:
+  groups:
+  - name: ingress_settings
+    title: Ingress Settings
+    description: Configure Ingress for Determined
+    items:
+    ...
+    - name: determined_load_balancer_annotations
+      type: textarea
+      title: Load Balancer Annotations
+      help_text: See your cloud provider’s documentation for the required annotations.
+      when: 'repl{{ and (not IsKurl) (ConfigOptionEquals "determined_ingress_type" "load_balancer") }}'
 ```
 
 2. Use the config option you created in your KOTS helm chart values for the service annotations
 
 [kots-helm.yaml](manifests/kots-helm.yaml)
 ```yaml
-values:
-  services:
-    determined:
-      enabled: true
-      appName: ["determined"]
-      annotations: repl{{ ConfigOption "determined_load_balancer_annotations" | nindent 10 }}
+apiVersion: kots.io/v1beta2
+kind: HelmChart
+metadata:
+  name: determined
+spec:
+  values:
+    services:
+      determined:
+        enabled: true
+        appName: ["determined"]
+        annotations: repl{{ ConfigOption "determined_load_balancer_annotations" | nindent 10 }}
 ```
 
 **NOTE**: The `| nindent 10` is important to ensure the annotation are formatted properly.
