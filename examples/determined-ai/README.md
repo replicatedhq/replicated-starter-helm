@@ -48,20 +48,26 @@ determined:
 
 [master.yaml](templates/replicated-library.yaml)
 ```yaml
-db:
-{{- if .Values.determined.externalPostgres.enabled }}
-  user: {{ required "A valid .Values.determined.externalPostgres.username entry required!" .Values.determined.externalPostgres.username | quote }}
-  password: {{ required "A valid Values.determined.externalPostgres.password entry required!" .Values.determined.externalPostgres.password | quote }}
-  host: {{ .Values.determined.externalPostgres.host }}
-  port: {{ .Values.determined.externalPostgres.port }}
-  name: {{ .Values.determined.externalPostgres.name | quote }}
-{{- else }}
-  user: postgres
-  password: {{ required "A valid Values.determined.postgresPassword entry required!" .Values.determined.postgresPassword | quote }}
-  host: postgresql
-  port: 5432
-  name: postgres
-{{- end }}
+secrets:
+  determined:
+    data:
+      master.yaml: |
+      ...
+        db:
+        {{- if .Values.determined.externalPostgres.enabled }}
+          user: {{ required "A valid .Values.determined.externalPostgres.username entry required!" .Values.determined.externalPostgres.username | quote }}
+          password: {{ required "A valid Values.determined.externalPostgres.password entry required!" .Values.determined.externalPostgres.password | quote }}
+          host: {{ .Values.determined.externalPostgres.host }}
+          port: {{ .Values.determined.externalPostgres.port }}
+          name: {{ .Values.determined.externalPostgres.name | quote }}
+        {{- else }}
+          user: postgres
+          password: {{ required "A valid Values.determined.postgresPassword entry required!" .Values.determined.postgresPassword | quote }}
+          host: postgresql
+          port: 5432
+          name: postgres
+        {{- end }}
+      ...
 ```
 
 2. Now that our templating is configured, we can use the new values that we've created for `externalPostgres` in our KOTS Config Options
@@ -115,32 +121,167 @@ db:
 
 [kots-helm.yaml](manifests/kots-helm.yaml)
 ```yaml
-    postgresql:
-      enabled: 'repl{{ (ConfigOptionEquals "postgres_type" "embedded_postgres") }}'
-      auth:
-        postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
+postgresql:
+  enabled: 'repl{{ (ConfigOptionEquals "postgres_type" "embedded_postgres") }}'
+  auth:
+    postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
 
-    determined:
-      postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
-      externalPostgresql:
-        enabled: repl{{ ConfigOptionEquals "postgres_type" "external_postgres" }}
-        username: 'repl{{ ConfigOption "external_postgres_username" }}'
-        password: 'repl{{ ConfigOption "external_postgres_password" }}'
-        database: 'repl{{ ConfigOption "external_postgres_db" }}'
-        host: 'repl{{ ConfigOption "external_postgres_host" }}'
-        port: 'repl{{ ConfigOption "external_postgres_port" }}'
+determined:
+  postgresPassword: 'repl{{ConfigOption "embedded_postgres_password"}}'
+  externalPostgresql:
+    enabled: repl{{ ConfigOptionEquals "postgres_type" "external_postgres" }}
+    username: 'repl{{ ConfigOption "external_postgres_username" }}'
+    password: 'repl{{ ConfigOption "external_postgres_password" }}'
+    database: 'repl{{ ConfigOption "external_postgres_db" }}'
+    host: 'repl{{ ConfigOption "external_postgres_host" }}'
+    port: 'repl{{ ConfigOption "external_postgres_port" }}'
 ```
 
 When the user sets the `postgres_type` to `external_postgres` in the KOTS config UI, additional config options are shown allowing them to specify the username, password, host, and port to connect to Postgres.
 
 ## Self-signed Ingress TLS Certificate vs. User-provided
 
+If you are providing a TLS secret with your app to terminate TLS at the Ingress level, you will likely want the ability to let users decide between providing their own certificate vs. defaulting to a self-signed one.
+
+1. Add the tls configuration to your helm chart values
+
+[values.yaml](values.yaml)
+```yaml
+determined:
+...
+tls:
+  enabled: true
+  genSelfSignedCert: false
+  cert: |
+    -----BEGIN CERTIFICATE-----
+    -----END CERTIFICATE-----
+  key: |
+    -----BEGIN PRIVATE KEY-----
+    -----END PRIVATE KEY-----
+...
+```
+
+2. Add a tls secret to your chart and implement the templating to conditionally choose between user-provided and self-signed
+
+[tls.yaml](templates/tls.yaml)
+```yaml
+{{- if .Values.determined.tls.enabled -}}
+  {{- $cert := dict -}}
+  {{- if .Values.determined.tls.genSelfSignedCert -}}
+    {{ $cert = genSelfSignedCert "determined.example.com" nil nil 730 }}
+  {{- else -}}
+    {{- $_ := set $cert "Cert" .Values.determined.tls.cert -}}
+    {{- $_ := set $cert "Key" .Values.determined.tls.key -}}
+  {{- end -}}
+apiVersion: v1
+data:
+  tls.crt: {{ $cert.Cert | b64enc }}
+  tls.key: {{ $cert.Key | b64enc }}
+kind: Secret
+metadata:
+  name: determined-tls
+type: kubernetes.io/tls
+{{- end -}}
+```
+
+3. In KOTS you can expose config options to allow a user to optionally upload a cert if the "User Provided" TLS option is selected
+
+[kots-config.yaml](manifests/kots-config.yaml)
+```yaml
+- name: determined_ingress_tls_type
+  title: Determined Ingress TLS Type
+  type: select_one
+  items:
+  - name: self_signed
+    title: Self Signed (Generate Self Signed Certificate)
+  - name: user_provided
+    title: User Provided (Upload a TLS Certificate and Key Pair)
+  required: true
+  default: self_signed
+  when: 'repl{{ and (not IsKurl) (ConfigOptionEquals "determined_ingress_type" "ingress_controller") }}'
+- name: determined_ingress_tls_cert
+  title: Determined TLS Cert
+  type: file
+  when: '{{repl and (ConfigOptionEquals "determined_ingress_type" "ingress_controller") (ConfigOptionEquals "determined_ingress_tls_type" "user_provided") }}'
+  required: true
+- name: determined_ingress_tls_key
+  title: Determined TLS Key
+  type: file
+  when: '{{repl and (ConfigOptionEquals "determined_ingress_type" "ingress_controller") (ConfigOptionEquals "determined_ingress_tls_type" "user_provided") }}'
+  required: true
+```
+
+[kots-helm.yaml](manifests/kots-helm.yaml)
+```yaml
+determined:
+...
+  tls:
+    enabled: repl{{ ConfigOptionEquals "determined_ingress_type" "ingress_controller" }}
+    genSelfSignedCert: repl{{ ConfigOptionEquals "determined_ingress_tls_type" "self_signed" }}
+    cert: repl{{ print `|`}}repl{{ ConfigOptionData `determined_ingress_tls_cert` | nindent 10 }}
+    key: repl{{ print `|`}}repl{{ ConfigOptionData `determined_ingress_tls_key` | nindent 10 }}
+...
+```
+
 ## Pass Labels and Annotations from Config Options to Helm Chart Values
+
+There may be a variety of different situations in which you'd want the user to be able to set annotations or labels on a resource you're deploying in your application. A good example is when you want the user to be able to set annotations on a `Service` or `Ingress` object in public cloud environments. The below shows how you can use Replicated's Config Options to do this.
+
+1. Use the `textarea` config option type to allow a user to copy/paste in their annotations or labels
+
+[kots-config.yaml](manifests/kots-config.yaml)
+```yaml
+...
+- name: determined_load_balancer_annotations
+  type: textarea
+  title: Load Balancer Annotations
+  help_text: See your cloud provider’s documentation for the required annotations.
+  when: 'repl{{ and (not IsKurl) (ConfigOptionEquals "determined_ingress_type" "load_balancer") }}'
+...
+```
+
+2. Use the config option you created in your KOTS helm chart values for the service annotations
+
+[kots-helm.yaml](manifests/kots-helm.yaml)
+```yaml
+values:
+  services:
+    determined:
+      enabled: true
+      appName: ["determined"]
+      annotations: repl{{ ConfigOption "determined_load_balancer_annotations" | nindent 10 }}
+```
+
+**NOTE**: The `| nindent 10` is important to ensure the annotation are formatted properly.
 
 ## Wait for Database to Start Before Starting your Application
 
-Helm chart for installing Determined on Kubernetes.
+A common pattern when you have an application that has a database dependency is to ensure that the database is healthy and accepting connections before starting the app. You can use [Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) in Kubernetes to accomplish this. Our example defines an `initContainer` using the Replicated Library Chart that will wait for a Postgres database to start before proceeding to the primary container in the pod.
 
-[Installation instructions](https://docs.determined.ai/latest/how-to/installation/kubernetes.html)
+[replicated-library.yaml](templates/replicated-library.yaml)
+```yaml
+apps:
+  determined:
+    initContainers:
+      1-postgres-wait:
+        image:
+          repository: docker.io/bitnami/postgresql
+          tag: 15.3.0-debian-11-r0
+        env:
+        {{- if .Values.determined.externalPostgres.enabled }}
+          POSTGRES_USER: {{ required "A valid .Values.determined.externalPostgres.username entry required!" .Values.determined.externalPostgres.username | quote }}
+          POSTGRES_PASSWORD: {{ required "A valid Values.determined.externalPostgres.password entry required!" .Values.determined.externalPostgres.password | quote }}
+          POSTGRES_HOST: {{ .Values.determined.externalPostgres.host }}
+          POSTGRES_PORT: {{ .Values.determined.externalPostgres.port }}
+          POSTGRES_DB: {{ .Values.determined.externalPostgres.name | quote }}
+        {{- else }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: {{ required "A valid Values.determined.postgresPassword entry required!" .Values.determined.postgresPassword | quote }}
+          POSTGRES_HOST: postgresql
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: postgres
+        {{- end }}
+        command: ["sh", "-c", "until PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -h $POSTGRES_HOST -p 5432 -d $POSTGRES_DB -c 'SELECT 1'; do sleep 1; done;"]
+```
 
-[Chart Configurations](https://docs.determined.ai/latest/reference/helm-config.html)
+Building off of the work done in [Embedded vs. External Database](#embedded-vs-external-database), we have an init container which will use the appropriate credentials to continously sleep until we have a successful query against the database.
