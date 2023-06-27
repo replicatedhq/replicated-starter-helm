@@ -6,10 +6,10 @@ This example shows how to package an AI application as a KOTS app using the [Rep
 
 # Table of Contents
 * [Examples](#examples)
-    * [Embedded vs. External Database](##embedded-vs-external-database)
-    * [Self-signed Ingress TLS Certificate vs. User-provided](##self-signed-ingress-tls-certificate-vs-user-provided)
-    * [Pass Labels and Annotations from Config Options to Helm Chart Values](##pass-labels-and-annotations-from-config-options-to-helm-chart-values)
-    * [Wait for Database to Start Before Starting your Application](##wait-for-database-to-start-before-starting-your-application)
+    * [Embedded vs. External Database](#embedded-vs-external-database)
+    * [Self-signed Ingress TLS Certificate vs. User-provided](#self-signed-ingress-tls-certificate-vs-user-provided)
+    * [Pass Labels and Annotations from Config Options to Helm Chart Values](#pass-labels-and-annotations-from-config-options-to-helm-chart-values)
+    * [Wait for Database to Start Before Starting your Application](#wait-for-database-to-start-before-starting-your-application)
 
 # Examples
 
@@ -21,7 +21,7 @@ You may have the need to allow end-users to choose between hosting the database 
 
 1. First you'll need to template in your helm chart the optionality between "embedded" vs. "external" Postgres
 
-[values.yaml](determined-ai/values.yaml)
+[values.yaml](values.yaml)
 ```yaml
 postgresql:
   enabled: true
@@ -46,7 +46,7 @@ determined:
 
 **NOTE**: Determined AI uses a secret containing a config file where all of the application configuration lives including the database connection string. The below is a snippet from that configuration file where we are adding our templating. For you this same templating might be added in environment variables or elsewhere but the same logic applies.
 
-[master.yaml](determined-ai/templates/replicated-library.yaml)
+[master.yaml](templates/replicated-library.yaml)
 ```yaml
 db:
 {{- if .Values.determined.externalPostgres.enabled }}
@@ -66,7 +66,7 @@ db:
 
 2. Now that our templating is configured, we can use the new values that we've created for `externalPostgres` in our KOTS Config Options
 
-[kots-config.yaml](determined-ai/manifests/kots-config.yaml)
+[kots-config.yaml](manifests/kots-config.yaml)
 ```yaml
 - name: database_settings
   title: Database
@@ -113,7 +113,7 @@ db:
       default: postgres
 ```
 
-[kots-helm.yaml](determined-ai/manifests/kots-helm.yaml)
+[kots-helm.yaml](manifests/kots-helm.yaml)
 ```yaml
     postgresql:
       enabled: 'repl{{ (ConfigOptionEquals "postgres_type" "embedded_postgres") }}'
