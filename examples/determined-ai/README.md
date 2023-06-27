@@ -2,7 +2,7 @@
 
 [Determined AI](https://docs.determined.ai/latest/index.html)
 
-This example shows how to package an AI application as a KOTS app using the [Replicated Library Chart](https://github.com/replicatedhq/helm-charts/tree/main/charts/replicated-library). Included are several practical examples of common patterns used when deploying a helm chart with KOTS.
+This example shows how to package an application as a KOTS app using the [Replicated Library Chart](https://github.com/replicatedhq/helm-charts/tree/main/charts/replicated-library). Included are several practical examples of common patterns used when deploying a helm chart with KOTS.
 
 # Table of Contents
 * [Examples](#examples)
