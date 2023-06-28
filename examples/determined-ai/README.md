@@ -54,7 +54,6 @@ secrets:
   determined:
     data:
       master.yaml: |
-      ...
         db:
         {{- if .Values.determined.externalPostgres.enabled }}
           user: {{ required "A valid .Values.determined.externalPostgres.username entry required!" .Values.determined.externalPostgres.username | quote }}
@@ -69,7 +68,6 @@ secrets:
           port: 5432
           name: postgres
         {{- end }}
-      ...
 ```
 
 2. Now that our templating is configured, we can use the new values that we've created for `externalPostgres` in our KOTS Config Options
@@ -129,7 +127,6 @@ metadata:
   name: determined
 spec:
   values:
-  ...
     postgresql:
       enabled: 'repl{{ (ConfigOptionEquals "postgres_type" "embedded_postgres") }}'
       auth:
@@ -157,7 +154,6 @@ If you are providing a TLS secret with your app to terminate TLS at the Ingress 
 [values.yaml](values.yaml)
 ```yaml
 determined:
-  ...
   tls:
     enabled: true
     genSelfSignedCert: false
@@ -206,7 +202,6 @@ spec:
     title: Ingress Settings
     description: Configure Ingress for Determined
     items:
-    ...
     - name: determined_ingress_tls_type
       title: Determined Ingress TLS Type
       type: select_one
@@ -238,9 +233,7 @@ metadata:
   name: determined
 spec:
   values:
-    ...
     determined:
-    ...
       tls:
         enabled: repl{{ ConfigOptionEquals "determined_ingress_type" "ingress_controller" }}
         genSelfSignedCert: repl{{ ConfigOptionEquals "determined_ingress_tls_type" "self_signed" }}
@@ -266,7 +259,6 @@ spec:
     title: Ingress Settings
     description: Configure Ingress for Determined
     items:
-    ...
     - name: determined_load_balancer_annotations
       type: textarea
       title: Load Balancer Annotations
