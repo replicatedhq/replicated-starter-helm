@@ -1,4 +1,4 @@
-apiVersion: kots.io/v1beta1
+apiVersion: kots.io/v1beta2
 kind: HelmChart
 metadata:
   name: vaultwarden
