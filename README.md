@@ -3,7 +3,7 @@ Replicated Helm Starter
 
 Example project showcasing how power users can leverage the Replicated CLI Tools to manage a helm chart that can be delivered via Replciated.
 
-This helm version of https://github.com/replicatedhq/replciated-starter-kots adds replicated manifests directly in a helm chart's working directory. To release:
+This helm version of https://github.com/replicatedhq/replicated-starter-kots adds replicated manifests directly in a helm chart's working directory. To release:
 
 ```
 helm package -u . -d manifests/
