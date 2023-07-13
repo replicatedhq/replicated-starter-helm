@@ -6,7 +6,7 @@ Example project showcasing how power users can leverage the Replicated CLI Tools
 This helm version of https://github.com/replicatedhq/replciated-starter-kots adds replicated manifests directly in a helm chart's working directory. To release:
 
 ```
-helm package . -d manifests/
+helm package -u . -d manifests/
 replicated release create --auto -y
 ```
 
