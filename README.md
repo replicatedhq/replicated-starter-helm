@@ -14,6 +14,7 @@ replicated release create --auto -y
 
 ## Get started
 
+If you are new to writing Helm charts, check out examples of Helm chart written utilizing the Replicated Helm Library chart [here](https://github.com/replicatedhq/platform-examples)
 
 ### Copy and Clone
 
@@ -25,6 +26,13 @@ You should use the template to create a new **private** repo in your org, for ex
 
 Once you've created a repository from the template, you'll want to `git clone` your new repo and `cd` into it locally.
 
+Edit the following values in Chart.yaml with your application information:
+- name
+- description
+- appVersion
+- home
+
+note: see Chart.yaml for examples
 
 
 ### 1. Install CLI
@@ -87,23 +95,12 @@ export REPLICATED_APP=...
 export REPLICATED_API_TOKEN=...
 ```
 
-`REPLICATED_APP` should be set to the app slug from the Settings page:
-
-<p align="center"><img src="./doc/REPLICATED_APP.png" width=600></img></p>
-
-Next, create a Service Account API token from the vendor portal under [Service Accounts](https://vendor.replicated.com/team/serviceaccounts):
-
-<p align="center"><img src="./doc/REPLICATED_API_TOKEN.png" width=600></img></p>
+You can find documentation on how to set environment variables [here](https://docs.replicated.com/reference/replicated-cli-installing#set-environment-variables)
 
 Ensure the token has the appropriate "Write" access in the selected [RBAC policy](https://vendor.replicated.com/team/policies) or you'll be unable create new releases. Once you have the values,
 set them in your environment.
 
-```
-export REPLICATED_APP=...
-export REPLICATED_API_TOKEN=...
-```
-
-You can ensure this is working with
+Once the environment variables are set, you can validate configuration by running the following command:
 
 ```
 replicated release ls
@@ -157,6 +154,9 @@ There is a file `kurl-installer.yaml` that can be used to manage [kurl.sh](https
 ```
 replicated installer create --auto
 ```
+
+### High-level application architecture
+Document application architecture here.
 
 ### Tools reference
 
