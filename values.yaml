@@ -14,78 +14,10 @@ global:
   # -- When `true``, the feature to automatically restarts an App pods when a ConfigMap or Secret changes is enabled.
   appReload: true
 
-defaults:
-  image:
-    pullPolicy: IfNotPresent
-  strategy: RollingUpdate
-  probes:
-    livenessProbe:
-      initialDelaySeconds: 0
-      periodSeconds: 10
-      timeoutSeconds: 5
-      successThreshold: 1
-      failureThreshold: 5
-      terminationGracePeriodSeconds: 30
-    readinessProbe:
-      initialDelaySeconds: 0
-      periodSeconds: 10
-      timeoutSeconds: 1
-      successThreshold: 1
-      failureThreshold: 5
-    startupProbe: {}
-
 troubleshoot:
   support-bundles:
     replicated:
-      enabled: false
+      enabled: true
       collectors:
         - clusterInfo: {}
         - clusterResources: {}
-        - ceph: {}
-        - longhorn: {}
-        - exec:
-            collectorName: weave-status
-            command:
-              - /home/weave/weave
-            args:
-              - --local
-              - status
-            containerName: weave
-            exclude: ""
-            name: kots/kurl/weave
-            namespace: kube-system
-            selector:
-              name: weave-net
-            timeout: 10s
-        - exec:
-            collectorName: weave-report
-            command:
-              - /home/weave/weave
-            args:
-              - --local
-              - report
-            containerName: weave
-            exclude: ""
-            name: kots/kurl/weave
-            namespace: kube-system
-            selector:
-              name: weave-net
-            timeout: 10s
-        - logs:
-            collectorName: weave-net
-            selector:
-              name: weave-net
-            namespace: kube-system
-            name: kots/kurl/weave
-        - logs:
-            collectorName: kube-flannel
-            selector:
-              app: flannel
-            namespace: kube-flannel
-            name: kots/kurl/flannel
-        - collectd:
-            collectorName: collectd
-            hostPath: /var/lib/collectd/rrd
-            image: alpine
-            imagePullPolicy: IfNotPresent
-            timeout: 5m
