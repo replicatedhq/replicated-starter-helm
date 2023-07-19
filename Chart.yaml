@@ -26,5 +26,5 @@ dependencies:
 - name: replicated-library
   repository: https://replicatedhq.github.io/helm-charts
   version: 0.13.3
-home: https://github.com/replicatedhq/replicated-starter-helm/charts/tree/main/
+home: https://github.com/replicated-collab/vendor-repo-name
 kubeVersion: '>=1.24.0-0'
