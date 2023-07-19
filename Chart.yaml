@@ -27,4 +27,4 @@ dependencies:
   repository: https://replicatedhq.github.io/helm-charts
   version: 0.13.3
 home: https://github.com/replicatedhq/replicated-starter-helm/charts/tree/main/
-kubeVersion: '>=1.16.0-0'
+kubeVersion: '>=1.24.0-0'
