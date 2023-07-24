@@ -1,0 +1,45 @@
+stages:          # List of stages for jobs, and their order of execution
+  - setup
+  - package
+  - release
+
+variables:
+  GITHUB_BRANCH_NAME: ${CI_COMMIT_BRANCH} # Redefining the variables that are replicated-cli specifics
+  GITHUB_TAG_NAME: ${CI_COMMIT_TAG} # Redefining the variables that are replicated-cli specifics
+
+'Verify Variables': # Added this stage just to verify that all variables are set as expected
+    stage: setup
+    script:
+      - "echo Release branch name: ${GITHUB_BRANCH_NAME}"
+      - "echo Release tag name: ${GITHUB_TAG_NAME}"
+      - "echo Replicated Application: ${REPLICATED_APP}" # This variable is set as a Project CI/CID Variable to not expose the value in the source code
+      - "echo Replicated API Token ${REPLICATED_API_TOKEN}" # This variable is set as a Project CI/CID Variable to not expose the value in the source code
+
+'Package with Helm':      # Package with Helm
+  stage: package
+  image: 
+    name: alpine/helm:latest
+    entrypoint: [""] # This is a must. Entrypoint must be overriden to allow the script part to work. Script can not be skipped for the pipeline spec.
+  script:
+    - helm package -u . -d manifests/ # As the entrypoint is skipped, specifying the entire command.
+  artifacts:
+    paths:
+      - "**/*.tgz"
+
+'Create a release on Channel':      # Making a Release
+  stage: release
+  dependencies:
+    - 'Package with Helm'
+  image: 
+    name: replicated/vendor-cli:latest
+    entrypoint: [""] # This is a must. Entrypoint must be overriden to allow the script part to work. Script can not be skipped for the pipeline spec.
+  script:
+    - /replicated release create --auto -y # As the entrypoint is skipped, specifying the entire command.
+
+'Release Kubernetes Installer': # Making Kurl Installer Release
+  stage: release
+  image: 
+    name: replicated/vendor-cli:latest
+    entrypoint: [""]
+  script:
+      - /replicated installer create --auto -y

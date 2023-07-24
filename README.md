@@ -141,12 +141,23 @@ In this case you have a few options:
 1. Remove all helm manifests from this repo, and configure a pipeline to manually new chart versions as `.tgz` archives into `manifests/` and then use `replicated release create` from there.
 
 
-## Integrating with CI
+## Integrating with GitHub
 
 This repo contains a [GitHub Actions](https://help.github.com/en/github/automating-your-workflow-with-github-actions/about-github-actions) workflow for ci at [./.github/workflows/main.yml](./.github/workflows/main.yml). You'll need to [configure secrets](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) for `REPLICATED_APP` and `REPLICATED_API_TOKEN`. On every push this will:
 
 - Ensure a channel exists for the branch that was pushed to
 - Create a release based on the contents of `./manifests`
+
+### Integration with GitLab
+
+This repo contains GitLab CI configuration [.gitlab-ci.yaml](./gitlab-ci.yml). The configuration requires a `REPLICATED_APP` and `REPLICATED_API_TOKEN` variables set outside of the configuration using [GitLab CI/CD Variables](https://docs.gitlab.com/ee/ci/variables/#define-a-cicd-variable-in-the-ui)
+
+The pipeline in the example configuration:
+
+- Prints out variables. *This stem must be used only for debug purposes and removed for pdouction.*
+- Packages Helm Chart
+- Creates Replicated release
+- Creates kURL installer release based on the [./kurl-installer.yaml](./kurl-installer.yaml) spec
 
 ## Advanced Usage
 
