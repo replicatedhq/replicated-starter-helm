@@ -5,7 +5,7 @@ Whether you are experienced in writing Helm charts or just starting out, the Rep
 
 Follow the "Get Started" steps below to setup your environment so begin writing a Helm chart.
 
-### Prerequisites:
+## Prerequisites:
 - A local K8s cluster
   - Any local Kubernetes solution (([k3d](https://k3d.io/), [Kind](https://kind.sigs.k8s.io/), [minikube](https://minikube.sigs.k8s.io/docs/)) will suffice.
   - Example, install a local Kind cluster on a local desktop:
