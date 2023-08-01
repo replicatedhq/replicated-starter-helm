@@ -27,7 +27,7 @@ Follow the "Get Started" steps below to setup your environment so begin writing 
     
 4. Update helm dependencies:  helm dependency update .
 
-5. Install Replicated CLI - [Intructions](https://docs.replicated.com/reference/replicated-cli-installing#install-the-replicated-cli)
+5. Install Replicated CLI - [Instructions](https://docs.replicated.com/reference/replicated-cli-installing#install-the-replicated-cli)
 
 6. Configure environment variables -- [Instructions](https://docs.replicated.com/reference/replicated-cli-installing#set-environment-variables)
 
