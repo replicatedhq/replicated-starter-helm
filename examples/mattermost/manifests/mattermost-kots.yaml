@@ -1,0 +1,52 @@
+# kots.io/v1beta2 HelmChart custom resource
+apiVersion: kots.io/v1beta2
+kind: HelmChart
+metadata:
+  name: mattermost-team-edition
+spec:
+  # chart identifies a matching chart from a .tgz
+  chart:
+    name: mattermost-team-edition
+    chartVersion: 6.6.41
+  
+  releaseName: mattermost-team-edition
+
+  # weight determines the order that charts are applied, with lower weights first.
+  weight: 42
+
+  # helmUpgradeFlags specifies additional flags to pass to the `helm upgrade` command.
+  helmUpgradeFlags:
+    - --skip-crds
+    - --no-hooks
+    - --timeout
+    - 1200s
+    - --history-max=15
+
+  # values are used in the customer environment as a pre-render step
+  # these values are supplied to helm template
+  values:
+    image:
+    # private image accessed through the proxy service
+      registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "docker.io" }}' 
+      repository: '{{repl HasLocalRegistry | ternary LocalRegistryNamespace "mattermost" }}/mattermost-team-edition'
+      pullSecrets:
+        - name: '{{repl ImagePullSecretName }}'
+    externalDB:
+      enabled: repl{{ ConfigOptionEquals `db_type` `external_db`}}
+      ## postgres or mysql
+      externalDriverType: "repl{{ ConfigOption `db_connection_type`}}"
+      ## postgres:  "<USERNAME>:<PASSWORD>@<HOST>:5432/<DATABASE_NAME>?sslmode=disable&connect_timeout=10"
+      ## mysql:     "<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s"
+      externalConnectionString: "repl{{ ConfigOption `db_connection_string`}}"
+    mysql:
+      enabled: "{{ if ConfigOptionEquals `db_type` `embedded_db`}}"
+      mysqlRootPassword: "repl{{ if ConfigOptionEquals `db_type` `embedded_db`}}repl{{ ConfigOption `mysql_root_password`}}repl{{ end}}"
+      mysqlUser: "repl{{ if ConfigOptionEquals `db_type` `embedded_db`}}repl{{ ConfigOption `mysql_username`}}repl{{ end}}"
+      mysqlPassword: "repl{{ if ConfigOptionEquals `db_type` `embedded_db`}}repl{{ ConfigOption `mysql_password`}}repl{{ end}}"
+  
+  # builder values render the chart with all images and manifests.
+  # builder is used to create `.airgap` packages and to support end users
+  # who use private registries
+  builder:
+    mysql:
+      enabled: true
