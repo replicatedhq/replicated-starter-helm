@@ -1,0 +1,59 @@
+apiVersion: kots.io/v1beta1
+kind: Config
+metadata:
+  name: mattermost-team-edition
+spec:
+  groups:
+    - name: database
+      title: Database
+      items:
+        - name: db_type
+          help_text: Would you like to use an embedded MySQL instance, or connect to an external database that you manage?
+          type: select_one
+          title: Database
+          default: embedded_db
+          items:
+            - name: embedded_db
+              title: Embedded MySQL
+            - name: external_db
+              title: External Database
+    - name: external_db_settings
+      title: External Database
+      when: 'repl{{ ConfigOptionEquals `db_type` `external_db`}}'
+      items:
+      - name: db_connection_type
+        type: select_one
+        default: mysql
+        items:
+        - name: mysql
+          title: MySQL
+        - name: postgres
+          title: PostgreSQL
+      - name: db_connection_string
+        help_text: Please enter the connection string for your external database.
+        type: text
+        title: External Database Connection String
+        default: "<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s"
+    - name: embedded_db_settings
+      title: Embedded MySQL Settings
+      when: 'repl{{ ConfigOptionEquals `db_type` `embedded_db`}}'
+      description: Configure MySQL Settings
+      items:
+        - name: mysql_root_password
+          title: Root password
+          hidden: true
+          help_text: The password for the MySQL root user
+          type: password
+          value: "{{repl RandomString 32}}"
+        - name: mysql_username
+          title: MySQL username
+          help_text: The username for the MySQL user
+          type: text
+          hidden: true
+          default: "mattermost"
+        - name: mysql_password
+          title: MySQL password
+          help_text: The password for the MySQL user
+          hidden: true
+          type: password
+          value: "{{repl RandomString 32}}"
